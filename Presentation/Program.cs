@@ -7,6 +7,7 @@ using Infrastructure.Repositories;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddSwaggerGen(config =>
         },
     });
 });
+builder.Services.AddScoped<IApplicationUser, CurrentApplicationUser>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();

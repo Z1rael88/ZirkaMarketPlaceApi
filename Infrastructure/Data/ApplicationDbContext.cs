@@ -1,10 +1,11 @@
 using Domain.Models;
+using Infrastructure.Data.Interceptors;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IApplicationUser user)
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<Product> Products { get; set; }
@@ -14,7 +15,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         return await base.SaveChangesAsync();
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.AddInterceptors(new AuditableEntityInterceptor(user));
 }
