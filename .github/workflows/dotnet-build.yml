@@ -19,8 +19,8 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Restore dependencies
-        run: dotnet restore MarketPlaceApi/MarketPlaceApi.sln
+        run: dotnet restore MarketPlaceApi.sln
       - name: Build
-        run: dotnet build MarketPlaceApi/MarketPlaceApi.sln --no-restore
+        run: dotnet build MarketPlaceApi.sln --no-restore
       - name: Test
-        run: dotnet test MarketPlaceApi/MarketPlaceApi.sln --no-build --verbosity normal
+        run: dotnet test MarketPlaceApi.sln --no-build --verbosity normal
