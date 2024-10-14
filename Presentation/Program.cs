@@ -1,12 +1,18 @@
+using Application.Initializers;
 using Application.Interfaces;
 using Application.Mappers;
 using Application.Services;
+using Domain.Models;
 using Infrastructure.Data;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Infrastructure.Repositories;
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Presentation.Extensions;
+using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,13 +52,34 @@ builder.Services.AddSwaggerGen(config =>
         },
     });
 });
+builder.Services.AddAuthenticationWithJwtTokenSettings(builder.Configuration);
+builder.Services.AddIdentityCore<User>(
+        options =>
+        {
+            var passwordSettings = builder.Configuration.GetSection("PasswordValidation");
+
+            options.Password.RequiredUniqueChars = passwordSettings.GetValue<int>("RequiredUniqueChars");
+            options.Password.RequireUppercase = passwordSettings.GetValue<bool>("RequireUppercase");
+            options.Password.RequiredLength = passwordSettings.GetValue<int>("RequiredLength");
+        })
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IApplicationUser, CurrentApplicationUser>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.EnableSensitiveDataLogging();
+});
 builder.Services.AddMapster();
 MapsterConfig.ProductMappings();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
@@ -63,6 +90,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -70,6 +98,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+await RolesInitializer.InitializeRolesAsync(app.Services);
+await SystemAdministratorInitializer.InitializeSystemAdministratorAsync(app.Services, builder.Configuration);
 app.UseCors("AllowReactApp");
 app.MapControllers();
 app.UseHttpsRedirection();
