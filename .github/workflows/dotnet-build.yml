@@ -1,0 +1,26 @@
+name: .NET Build
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore DigitalLogistic/DigitalLogistic.sln
+      - name: Build
+        run: dotnet build DigitalLogistic/DigitalLogistic.sln --no-restore
+      - name: Test
+        run: dotnet test DigitalLogistic/DigitalLogistic.sln --no-build --verbosity normal
