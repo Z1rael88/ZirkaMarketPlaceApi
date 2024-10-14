@@ -1,3 +1,5 @@
+using Domain.Constants;
+using Domain.Interfaces;
 using Domain.Models;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +21,7 @@ namespace Infrastructure.Data.Interceptors
 
         public void UpdateEntities(DbContext context)
         {
-            foreach (var entry in context.ChangeTracker.Entries<BaseEntity>())
+            foreach (var entry in context.ChangeTracker.Entries<IBaseEntity>())
             {
                 if (entry.State is EntityState.Added or EntityState.Modified)
                 {

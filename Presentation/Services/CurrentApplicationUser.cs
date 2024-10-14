@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Domain.Constants;
 using Infrastructure.Interfaces;
 
 namespace Presentation.Services
@@ -16,7 +17,7 @@ namespace Presentation.Services
                     return userId;
                 }
 
-                throw new UnauthorizedAccessException("ID assignment failed.");
+                return DefaultUser.DefaultUserId;
             }
         }
     }
