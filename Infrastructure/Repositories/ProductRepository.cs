@@ -9,8 +9,6 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
     public async Task<Product> CreateProductAsync(Product product)
     {
         var createdProduct = await dbContext.Products.AddAsync(product);
-        if (createdProduct == null)
-            throw new ArgumentException("Product creation failed");
         await dbContext.SaveChangesAsync();
         return createdProduct.Entity;
     }
@@ -18,12 +16,8 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
     public async Task<Product> UpdateProductAsync(Product product)
     {
         var productToUpdate = await GetProductByIdAsync(product.Id);
-        productToUpdate.Description = product.Description;
-        productToUpdate.AvailableAmount = product.AvailableAmount;
-        productToUpdate.TotalAmountSold = product.TotalAmountSold;
-        productToUpdate.PhotoUrl = product.PhotoUrl;
-        productToUpdate.Name = product.Name;
-        productToUpdate.Rating = product.Rating;
+        dbContext.Entry(productToUpdate).CurrentValues.SetValues(product);
+        dbContext.Entry(productToUpdate).Property(nameof(productToUpdate.TotalAmountSold)).IsModified = false;
         await dbContext.SaveChangesAsync();
         return productToUpdate;
     }

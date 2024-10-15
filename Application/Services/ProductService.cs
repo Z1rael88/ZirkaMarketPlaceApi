@@ -8,10 +8,11 @@ namespace Application.Services;
 
 public class ProductService(IProductRepository productRepository) : IProductService
 {
-    public async Task<ProductResponseDto> CreateProductAsync(ProductDto productDto)
+    public async Task<ProductResponseDto> CreateProductAsync(CreateProductDto productDto)
     {
         var product = productDto.Adapt<Product>();
         var createdProduct = await productRepository.CreateProductAsync(product);
+        createdProduct.TotalAmountSold = 0;
         return createdProduct.Adapt<ProductResponseDto>();
     }
 
