@@ -14,6 +14,8 @@ public static class MapsterConfig
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.TotalAmountSold, src => src.TotalAmountSold)
             .Map(dest => dest.AvailableAmount, src => src.AvailableAmount)
+            .Map(dest=>dest.Price , src=>src.Price)
+            .Map(dest=>dest.PhotoUrl , src=>src.PhotoUrl)
             .Map(dest => dest.Rating, src => src.Rating);
     }
 }

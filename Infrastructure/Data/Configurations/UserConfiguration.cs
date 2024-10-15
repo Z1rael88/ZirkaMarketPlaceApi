@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations
 {
-    public class ApplicationUserConfiguration
+    public class UserConfiguration
         : BaseEntityConfiguration<User>
     {
         public override void Configure(EntityTypeBuilder<User> builder)

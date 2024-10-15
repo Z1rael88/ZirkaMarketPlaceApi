@@ -18,6 +18,8 @@ public class ProductConfiguration : BaseEntityConfiguration<Product>
             .IsRequired();
         builder.Property(p => p.Rating)
             .IsRequired();
+        builder.Property(p => p.Price)
+            .IsRequired();
         builder.Property(p => p.PhotoUrl)
             .IsRequired();
     }

@@ -1,10 +1,13 @@
 using Domain.Models;
+using Infrastructure.Data.Configurations;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Data
 {
@@ -20,9 +23,21 @@ namespace Infrastructure.Data
             return await base.SaveChangesAsync();
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            ApplyConfigurations(builder);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.AddInterceptors(new AuditableEntityInterceptor(user));
+        }
+        private void ApplyConfigurations(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .ApplyConfiguration(new ProductConfiguration())
+                .ApplyConfiguration(new UserConfiguration());
         }
     }
 }
