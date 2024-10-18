@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Domain.Constants;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,7 +48,11 @@ namespace Presentation.Middlewares
                     statusCode = StatusCodes.Status400BadRequest;
                     message = ex.Message;
                     break;
-
+                case IdentityException identityEx:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    errors = identityEx.Errors;
+                    message = identityEx.Message;
+                    break;
                 case ArgumentException:
                     statusCode = StatusCodes.Status400BadRequest;
                     errors.Add(ex.Message);
