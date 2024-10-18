@@ -1,5 +1,6 @@
 using Application.Dtos;
 using Application.Interfaces;
+using Domain.Filters;
 using Domain.Models;
 using Infrastructure.Interfaces;
 using Mapster;
@@ -30,10 +31,10 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return product.Adapt<ProductResponseDto>();
     }
 
-    public async Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync()
+    public async Task<PaginatedResponse<ProductResponseDto>> GetAllPaginatedProductsAsync(int pageNumber,int pageSize,ProductFilter? filter = null)
     {
-        var product = await productRepository.GetProductsAsync();
-        return product.Adapt<IEnumerable<ProductResponseDto>>();
+        var product = await productRepository.GetAllPaginatedProductsAsync(pageNumber,pageSize,filter);
+        return product.Adapt<PaginatedResponse<ProductResponseDto>>();
     }
 
     public async Task DeleteProductAsync(Guid productId)
