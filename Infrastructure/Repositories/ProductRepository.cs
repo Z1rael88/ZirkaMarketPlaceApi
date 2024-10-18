@@ -37,6 +37,8 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
 
     public async Task DeleteProductAsync(Guid productId)
     {
-        await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        if (product != null) dbContext.Products.Remove(product);
+        await dbContext.SaveChangesAsync();
     }
 }
