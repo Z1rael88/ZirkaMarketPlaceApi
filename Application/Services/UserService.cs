@@ -24,6 +24,7 @@ public class UserService(
     public async Task<BaseUserDto> RegisterUserAsync(RegisterUserDto registerUserDto)
     {
         var roleName = registerUserDto.Role.ToString();
+        await ValidateRoleAsync(registerUserDto.Role);
         var newUser = registerUserDto.Adapt<User>();
         await CreateUserAndAssignRoleAsync(newUser, registerUserDto.Password, roleName);
         var userDto = newUser.Adapt<BaseUserDto>();
@@ -183,6 +184,12 @@ public class UserService(
         {
             throw new ArgumentException(
                 $"That Role with name {role.ToString()} is not found, the Role should be a specified enum value ");
+        }
+
+        if ( role == Role.SystemAdministrator)
+        {
+            throw new ArgumentException(
+                "You cannot register as a System Administrator");
         }
     }
 

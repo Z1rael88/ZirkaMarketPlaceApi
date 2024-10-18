@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Presentation.Extensions;
+using Presentation.Middlewares;
 using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +72,7 @@ builder.Services.AddScoped<IApplicationUser, CurrentApplicationUser>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+builder.Services.AddScoped<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -100,6 +102,7 @@ if (app.Environment.IsDevelopment())
 }
 await RolesInitializer.InitializeRolesAsync(app.Services);
 await SystemAdministratorInitializer.InitializeSystemAdministratorAsync(app.Services, builder.Configuration);
+app.UseMiddleware<GlobalExceptionHandler>();
 app.UseCors("AllowReactApp");
 app.MapControllers();
 app.UseHttpsRedirection();
