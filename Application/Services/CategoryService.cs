@@ -8,14 +8,14 @@ namespace Infrastructure.Repositories;
 
 public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
-    public async Task<CategoryResponceDto> CreateCategoryAsync(CategoryDto categoryDto)
+    public async Task<CategoryResponseDto> CreateCategoryAsync(CategoryDto categoryDto)
     {
         var category = categoryDto.Adapt<Category>();
         var createdCategory = await categoryRepository.CreateCategoryAsync(category);
-        return createdCategory.Adapt<CategoryResponceDto>();
+        return createdCategory.Adapt<CategoryResponseDto>();
     }
 
-    public async Task<CategoryResponceDto> UpdateCategoryAsync(CategoryDto categoryDto, Guid categoryId)
+    public async Task<CategoryResponseDto> UpdateCategoryAsync(CategoryDto categoryDto, Guid categoryId)
     {
         var existingCategory = await categoryRepository.GetCategoryByIdAsync(categoryId);
         if (existingCategory == null)
@@ -23,13 +23,13 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
 
         categoryDto.Adapt(existingCategory); 
         var updatedCategory = await categoryRepository.UpdateCategoryAsync(existingCategory);
-        return updatedCategory.Adapt<CategoryResponceDto>();
+        return updatedCategory.Adapt<CategoryResponseDto>();
     }
 
-    public async Task<CategoryResponceDto> GetCategoryByIdAsync(Guid categoryId)
+    public async Task<CategoryResponseDto> GetCategoryByIdAsync(Guid categoryId)
     {
         var category = await categoryRepository.GetCategoryByIdAsync(categoryId);
-        return category.Adapt<CategoryResponceDto>();
+        return category.Adapt<CategoryResponseDto>();
     }
 
     public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync() 

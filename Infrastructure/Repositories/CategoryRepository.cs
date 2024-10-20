@@ -4,19 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class CategoryRepository : ICategoryRepository
-    {
-        private readonly IApplicationDbContext _dbContext;
-
-        public CategoryRepository(IApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }       
+    public class CategoryRepository(IApplicationDbContext dbContext) : ICategoryRepository
+    {       
 
         public async Task<Category> CreateCategoryAsync(Category category)
         {
-            var createdCategory = await _dbContext.Categories.AddAsync(category);
-            await _dbContext.SaveChangesAsync();
+            var createdCategory = await dbContext.Categories.AddAsync(category);
+            await dbContext.SaveChangesAsync();
             return createdCategory.Entity;
         }
 
@@ -26,15 +20,15 @@ namespace Infrastructure.Repositories
             if (categoryToUpdate == null)
                 throw new ArgumentException($"Category with id: {category.Id} not found");
 
-            _dbContext.Entry(categoryToUpdate).CurrentValues.SetValues(category);
-            await _dbContext.SaveChangesAsync();
+            dbContext.Entry(categoryToUpdate).CurrentValues.SetValues(category);
+            await dbContext.SaveChangesAsync();
             return categoryToUpdate;
         }
         
 
         public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
         {
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+            var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
             if (category == null)
                 throw new ArgumentException($"Category with id: {categoryId} not found");
             return category;
@@ -42,7 +36,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await _dbContext.Categories.ToListAsync();
+            return await dbContext.Categories.ToListAsync();
         }
 
         public async Task DeleteCategoryAsync(Guid categoryId)
@@ -51,8 +45,8 @@ namespace Infrastructure.Repositories
             if (categoryToDelete == null)
                 throw new ArgumentException($"Category with id: {categoryId} not found");
 
-            _dbContext.Categories.Remove(categoryToDelete);
-            await _dbContext.SaveChangesAsync();
+            dbContext.Categories.Remove(categoryToDelete);
+            await dbContext.SaveChangesAsync();
 
         }
 
