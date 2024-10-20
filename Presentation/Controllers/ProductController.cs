@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
 
-[Authorize]
 [Route("api/products")]
 [ApiController]
 public class ProductController(IProductService productService) : ControllerBase
