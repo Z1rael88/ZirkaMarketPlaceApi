@@ -1,4 +1,4 @@
-using Domain.Models;
+  using Domain.Models;
 using Infrastructure.Data.Configurations;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Interfaces;
@@ -17,6 +17,7 @@ namespace Infrastructure.Data
         public EntityEntry Entry(object entity) => base.Entry(entity);
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         public async Task<int> SaveChangesAsync()
         {

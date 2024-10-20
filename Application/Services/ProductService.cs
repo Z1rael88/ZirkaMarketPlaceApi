@@ -16,7 +16,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return createdProduct.Adapt<ProductResponseDto>();
     }
 
-    public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto,Guid productId)
+    public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto, Guid productId)
     {
         var existingProduct = await productRepository.GetProductByIdAsync(productId);
         productDto.Adapt(existingProduct);
