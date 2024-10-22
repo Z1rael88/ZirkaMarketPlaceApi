@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
-
+//[Authorize]
 [Route("api/products")]
 [ApiController]
 public class ProductController(IProductService productService) : ControllerBase
@@ -44,5 +44,12 @@ public class ProductController(IProductService productService) : ControllerBase
     {
         await productService.DeleteProductAsync(productId);
         return NoContent();
+    }
+
+    [HttpPatch]
+    public async Task<IActionResult> UpdateRating(Guid productId,int rating)
+    {
+        await productService.UpdateRatingAsync(productId, rating);
+        return Ok();
     }
 }

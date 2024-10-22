@@ -17,7 +17,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return createdProduct.Adapt<ProductResponseDto>();
     }
 
-    public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto,Guid productId)
+    public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto, Guid productId)
     {
         var existingProduct = await productRepository.GetProductByIdAsync(productId);
         productDto.Adapt(existingProduct);
@@ -28,17 +28,42 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     public async Task<ProductResponseDto> GetProductByIdAsync(Guid productId)
     {
         var product = await productRepository.GetProductByIdAsync(productId);
+        var updatedProduct = UpdateRatingOfProduct(new List<int>());
         return product.Adapt<ProductResponseDto>();
     }
 
-    public async Task<PaginatedResponse<ProductResponseDto>> GetAllPaginatedProductsAsync(int pageNumber,int pageSize,ProductFilter? filter = null)
+    public async Task UpdateRatingAsync(Guid productId, int rating)
     {
-        var product = await productRepository.GetAllPaginatedProductsAsync(pageNumber,pageSize,filter);
+        var product = await productRepository.GetProductByIdAsync(productId);
+
+        product.Ratings ??= [];
+        product.Ratings?.Add(rating);
+        var updatedRating = UpdateRatingOfProduct(product.Ratings!);
+        product.Rating = updatedRating;
+        await productRepository.UpdateProductAsync(product);
+    }
+
+    public async Task<PaginatedResponse<ProductResponseDto>> GetAllPaginatedProductsAsync(int pageNumber, int pageSize,
+        ProductFilter? filter = null)
+    {
+        var product = await productRepository.GetAllPaginatedProductsAsync(pageNumber, pageSize, filter);
         return product.Adapt<PaginatedResponse<ProductResponseDto>>();
     }
 
     public async Task DeleteProductAsync(Guid productId)
     {
         await productRepository.DeleteProductAsync(productId);
+    }
+
+    private int UpdateRatingOfProduct(List<int> ratings)
+    {
+        if (ratings.Count > 0)
+        {
+            var sum = ratings.Sum();
+            var avg = sum / ratings.Count;
+            return avg;
+        }
+
+        return 0;
     }
 }
