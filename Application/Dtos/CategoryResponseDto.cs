@@ -1,6 +1,6 @@
 ﻿namespace Application.Dtos;
 
-public class ProductResponseDto : ProductDto
+public class CategoryResponseDto : CategoryDto
 {
     public Guid Id { get; set; }
 }
