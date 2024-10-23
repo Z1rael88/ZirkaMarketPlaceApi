@@ -1,3 +1,4 @@
+using Domain.Filters;
 using Domain.Models;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
     public async Task<Product> CreateProductAsync(Product product)
     {
         var createdProduct = await dbContext.Products.AddAsync(product);
+        createdProduct.Entity.Rating = 0;
         await dbContext.SaveChangesAsync();
         return createdProduct.Entity;
     }
@@ -30,9 +32,33 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
         return product;
     }
 
-    public async Task<IEnumerable<Product>> GetProductsAsync()
+    public async Task<PaginatedResponse<Product>> GetAllPaginatedProductsAsync(int pageNumber, int pageSize,
+        ProductFilter? filter = null)
     {
-        return await dbContext.Products.ToListAsync();
+        var query = dbContext.Products.AsQueryable();
+        if (filter != null)
+        {
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                query = query.Where(p => p.Name.Contains(filter.Name));
+            }
+
+            if (filter.Rating.HasValue)
+                query = query.Where(p => p.Rating == filter.Rating);
+            if (filter.Price.HasValue)
+                query = query.Where(p => p.Price <= filter.Price);
+        }
+
+        var totalCount = await query.CountAsync();
+        var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return new PaginatedResponse<Product>()
+        {
+            TotalCount = totalCount,
+            Items = items,
+            PageSize = pageSize,
+            PageNumber = pageNumber
+        };
     }
 
     public async Task DeleteProductAsync(Guid productId)
