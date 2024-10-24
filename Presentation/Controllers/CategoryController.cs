@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers;
 
 [Authorize]
-[Route("api/category")]
+[Route("api/categories")]
 [ApiController]
 public class CategoryController(ICategoryService categoryService) : ControllerBase
 {

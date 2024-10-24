@@ -4,7 +4,7 @@ using Domain.Models;
 using Infrastructure.Interfaces;
 using Mapster;
 
-namespace Infrastructure.Repositories;
+namespace Application.Services;
 
 public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
@@ -32,10 +32,10 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         return category.Adapt<CategoryResponseDto>();
     }
 
-    public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync() 
+    public async Task<IEnumerable<CategoryResponseDto>> GetAllCategoriesAsync() 
     {
         var categories = await categoryRepository.GetCategoriesAsync();
-        return categories.Adapt<IEnumerable<CategoryDto>>();
+        return categories.Adapt<IEnumerable<CategoryResponseDto>>();
     }
 
     public async Task DeleteCategoriesAsync(Guid categoryId) 
