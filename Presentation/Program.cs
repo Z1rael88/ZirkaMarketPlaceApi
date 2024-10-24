@@ -1,3 +1,4 @@
+using System.Configuration;
 using Application.Initializers;
 using Application.Interfaces;
 using Application.Mappers;
@@ -14,6 +15,8 @@ using Microsoft.OpenApi.Models;
 using Presentation.Extensions;
 using Presentation.Middlewares;
 using Presentation.Services;
+using Stripe;
+using ProductService = Application.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +74,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IApplicationUser, CurrentApplicationUser>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
@@ -84,6 +88,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddMapster();
 MapsterConfig.ProductMappings();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+var stripeSection = builder.Configuration.GetSection("Stripe");
+StripeConfiguration.ApiKey = stripeSection["SecretKey"];
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {

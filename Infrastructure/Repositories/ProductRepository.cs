@@ -67,4 +67,12 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
         if (product != null) dbContext.Products.Remove(product);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<Guid> productIds)
+    {
+        return await dbContext.Products
+            .Where(p => productIds.Contains(p.Id))  
+            .ToListAsync();                       
+    }
+
 }

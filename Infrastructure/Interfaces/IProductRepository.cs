@@ -10,4 +10,5 @@ public interface IProductRepository
     Task<Product> GetProductByIdAsync(Guid productId);
     Task<PaginatedResponse<Product>> GetAllPaginatedProductsAsync(int pageNumber,int pageSize,ProductFilter? filter = null);
     Task DeleteProductAsync(Guid productId);
+    Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<Guid> productIds);
 }
