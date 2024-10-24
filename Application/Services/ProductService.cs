@@ -47,6 +47,17 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return product.Adapt<PaginatedResponse<ProductResponseDto>>();
     }
 
+    public async Task<IEnumerable<ProductResponseDto>> GetBestSellersAsync()
+    {
+        var sortedProducts = await productRepository.GetBestSellersAsync();
+        return sortedProducts.Adapt<IEnumerable<ProductResponseDto>>();
+    }
+    public async Task<IEnumerable<ProductResponseDto>> GetNewProductsAsync()
+    {
+        var sortedProducts = await productRepository.GetNewProductsAsync();
+        return sortedProducts.Adapt<IEnumerable<ProductResponseDto>>();
+    }
+
     public async Task DeleteProductAsync(Guid productId)
     {
         await productRepository.DeleteProductAsync(productId);
