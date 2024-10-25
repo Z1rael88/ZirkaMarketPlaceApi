@@ -36,8 +36,20 @@ public class ProductController(IProductService productService) : ControllerBase
     public async Task<IActionResult> GetAllProducts(int pageNumber = 1, int pageSize = 10,
         [FromQuery] ProductFilter? filter = null)
     {
-        var product = await productService.GetAllPaginatedProductsAsync(pageNumber, pageSize, filter);
-        return Ok(product);
+        var products = await productService.GetAllPaginatedProductsAsync(pageNumber, pageSize, filter);
+        return Ok(products);
+    }
+    [HttpGet("bestsellers")]
+    public async Task<IActionResult> GetBestSellers()
+    {
+        var products = await productService.GetBestSellersAsync();
+        return Ok(products);
+    }
+    [HttpGet("new-products")]
+    public async Task<IActionResult> GetNewProducts()
+    {
+        var products = await productService.GetNewProductsAsync();
+        return Ok(products);
     }
 
     [HttpDelete("{productId}")]

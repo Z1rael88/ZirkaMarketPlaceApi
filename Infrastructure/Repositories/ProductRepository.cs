@@ -67,4 +67,13 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
         if (product != null) dbContext.Products.Remove(product);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Product>> GetBestSellersAsync()
+    {
+        return await dbContext.Products.OrderByDescending(p => p.TotalAmountSold).Take(10).ToListAsync();
+    }
+    public async Task<IEnumerable<Product>> GetNewProductsAsync()
+    {
+        return await dbContext.Products.OrderByDescending(p => p.CreatedDate).Take(10).ToListAsync();
+    }
 }
