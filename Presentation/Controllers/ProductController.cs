@@ -12,7 +12,7 @@ namespace Presentation.Controllers;
 public class ProductController(IProductService productService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto productDto)
+    public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto productDto)
     {
         var product = await productService.CreateProductAsync(productDto);
         return Ok(product);
