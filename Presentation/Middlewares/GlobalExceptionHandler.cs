@@ -57,11 +57,15 @@ namespace Presentation.Middlewares
                     statusCode = StatusCodes.Status400BadRequest;
                     errors.Add(ex.Message);
                     break;
+                case FluentValidation.ValidationException:
+                    statusCode = StatusCodes.Status401Unauthorized;
+                    message = ex.Message;
+                    break;
                 case UnauthorizedAccessException:
                     statusCode = StatusCodes.Status401Unauthorized;
                     message = ex.Message;
                     break;
-
+           
             }
 
             return (statusCode, message, errors);

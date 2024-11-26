@@ -2,6 +2,7 @@
 using Infrastructure.Data.Configurations;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -36,9 +37,13 @@ namespace Infrastructure.Data
         }
         private void ApplyConfigurations(ModelBuilder modelBuilder)
         {
+            var categoryValidationOptions = this.GetService<IOptions<CategoryValidationOptions>>().Value;
+            var productValidationOptions = this.GetService<IOptions<ProductValidationOptions>>().Value;
+
             modelBuilder
-                .ApplyConfiguration(new ProductConfiguration())
-                .ApplyConfiguration(new UserConfiguration());
+                .ApplyConfiguration(new UserConfiguration())
+                .ApplyConfiguration(new CategoryConfiguration(categoryValidationOptions))
+                .ApplyConfiguration(new ProductConfiguration(productValidationOptions));
         }
     }
 }

@@ -1,8 +1,11 @@
+using Application.Dtos;
 using Application.Initializers;
 using Application.Interfaces;
 using Application.Mappers;
 using Application.Services;
+using Application.Validators;
 using Domain.Models;
+using FluentValidation;
 using Infrastructure.Data;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -81,7 +84,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     options.EnableSensitiveDataLogging();
 });
-builder.Services.AddMapster();
+builder.Services.Configure<CategoryValidationOptions>(builder.Configuration.GetSection("CategoryValidation"));
+builder.Services.AddTransient<IValidator<CategoryDto>, CategoryDtoValidator>();
+builder.Services.Configure<ProductValidationOptions>(builder.Configuration.GetSection("ProductValidation"));
+builder.Services.AddTransient<IValidator<ProductResponseDto>, ProductDtoValidator>();
 MapsterConfig.ProductMappings();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddControllers();
