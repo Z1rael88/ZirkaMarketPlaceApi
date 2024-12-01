@@ -7,8 +7,8 @@ namespace Presentation.Controllers;
 [Route("api/file/")]
 public class FileStorageController(IFileStorageService fileStorageService) : ControllerBase
 {
-    [HttpPost]
-    public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromQuery] string folder = "avatars")
+    [HttpPost("avatar")]
+    public async Task<IActionResult> UploadFile(IFormFile file, [FromQuery] string folder = "avatars")
     {
         try
         {
