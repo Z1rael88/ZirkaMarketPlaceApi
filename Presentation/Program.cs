@@ -73,6 +73,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IApplicationUser, CurrentApplicationUser>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor();
@@ -84,6 +85,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddMapster();
 MapsterConfig.ProductMappings();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+builder.Services.Configure<GoogleStorageOptions>(builder.Configuration.GetSection("GoogleCloud"));
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
