@@ -75,4 +75,12 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
             .ToListAsync();                       
     }
 
+    public async Task<IEnumerable<Product>> GetBestSellersAsync()
+    {
+        return await dbContext.Products.OrderByDescending(p => p.TotalAmountSold).Take(10).ToListAsync();
+    }
+    public async Task<IEnumerable<Product>> GetNewProductsAsync()
+    {
+        return await dbContext.Products.OrderByDescending(p => p.CreatedDate).Take(10).ToListAsync();
+    }
 }
