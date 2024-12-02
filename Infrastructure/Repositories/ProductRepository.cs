@@ -68,6 +68,13 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<Guid> productIds)
+    {
+        return await dbContext.Products
+            .Where(p => productIds.Contains(p.Id))  
+            .ToListAsync();                       
+    }
+
     public async Task<IEnumerable<Product>> GetBestSellersAsync()
     {
         return await dbContext.Products.OrderByDescending(p => p.TotalAmountSold).Take(10).ToListAsync();

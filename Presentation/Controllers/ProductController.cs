@@ -1,23 +1,25 @@
 using Application.Dtos;
 using Application.Interfaces;
+using Domain.Enums;
 using Domain.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Helpers;
 
 namespace Presentation.Controllers;
 
-[Authorize]
 [Route("api/products")]
 [ApiController]
 public class ProductController(IProductService productService) : ControllerBase
 {
+    [AuthorizeWithRoles(Role.Seller,Role.SystemAdministrator)]
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto productDto)
     {
         var product = await productService.CreateProductAsync(productDto);
         return Ok(product);
     }
-
+    [AuthorizeWithRoles(Role.Seller,Role.SystemAdministrator)]
     [HttpPut("{productId}")]
     public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto, Guid productId)
     {
@@ -51,14 +53,14 @@ public class ProductController(IProductService productService) : ControllerBase
         var products = await productService.GetNewProductsAsync();
         return Ok(products);
     }
-
+    [AuthorizeWithRoles(Role.Seller,Role.SystemAdministrator)]
     [HttpDelete("{productId}")]
     public async Task<IActionResult> DeleteProduct(Guid productId)
     {
         await productService.DeleteProductAsync(productId);
         return NoContent();
     }
-
+    [AuthorizeWithRoles(Role.Buyer,Role.SystemAdministrator)]
     [HttpPatch]
     public async Task<IActionResult> UpdateRating(Guid productId,int rating)
     {
