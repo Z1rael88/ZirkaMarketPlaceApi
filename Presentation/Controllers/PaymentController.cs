@@ -1,14 +1,17 @@
 using Application.Dtos;
 using Application.Interfaces;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Helpers;
 
 namespace Presentation.Controllers;
 
 [ApiController]
+[AuthorizeWithRoles(Role.Buyer,Role.SystemAdministrator)]
 [Route("api/payments")]
 public class PaymentController(IPaymentService paymentService) : ControllerBase
 {
-    [HttpPost("buy")]
+    [HttpPost("buy-product")]
     public async Task<IActionResult> BuyProduct(PaymentRequestDto paymentRequestDto)
     {
         var paymentResult = await paymentService.ProcessPaymentAsync(paymentRequestDto);
@@ -18,13 +21,5 @@ public class PaymentController(IPaymentService paymentService) : ControllerBase
         }
 
         return BadRequest();
-    }
-
-    [HttpPost("payment-method")]
-    public async Task<IActionResult> CreatePaymentMethod(CreatePaymentMethodDto paymentRequestDto)
-    {
-        var paymentMethodId = await paymentService.CreatePaymentMethodAsync(paymentRequestDto);
-
-        return Ok(paymentMethodId);
     }
 }

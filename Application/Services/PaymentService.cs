@@ -22,25 +22,6 @@ public class PaymentService(IProductRepository productRepository) : IPaymentServ
         return false;
     }
 
-    public async Task<string> CreatePaymentMethodAsync(CreatePaymentMethodDto createPaymentMethodDto)
-    {
-        var options = new PaymentMethodCreateOptions
-        {
-            Type = "card",
-            Card = new PaymentMethodCardOptions
-            {
-                Number = createPaymentMethodDto.CardNumber,
-                ExpMonth = int.Parse(createPaymentMethodDto.ExpiryMonth),
-                ExpYear = int.Parse(createPaymentMethodDto.ExpiryYear),
-                Cvc = createPaymentMethodDto.Cvc,
-            },
-        };
-
-        var service = new PaymentMethodService();
-        var paymentMethod = await service.CreateAsync(options);
-        return paymentMethod.Id;
-    }
-
     private async Task<PaymentIntent> CreatePaymentIntent(PaymentRequestDto paymentRequestDto,decimal amount)
     {
         var options = new PaymentIntentCreateOptions
