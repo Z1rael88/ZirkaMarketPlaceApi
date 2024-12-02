@@ -5,7 +5,7 @@
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FixProductValidator : Migration
+    public partial class CategoryProductValidator : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,8 +17,7 @@ namespace Infrastructure.Migrations
                 maxLength: 25,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "text",
-                oldMaxLength: 0);
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Description",
@@ -27,8 +26,7 @@ namespace Infrastructure.Migrations
                 maxLength: 450,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "text",
-                oldMaxLength: 0);
+                oldType: "text");
         }
 
         /// <inheritdoc />
@@ -38,7 +36,6 @@ namespace Infrastructure.Migrations
                 name: "Name",
                 table: "Products",
                 type: "text",
-                maxLength: 0,
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(25)",
@@ -48,7 +45,6 @@ namespace Infrastructure.Migrations
                 name: "Description",
                 table: "Products",
                 type: "text",
-                maxLength: 0,
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(450)",

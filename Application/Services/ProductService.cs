@@ -4,13 +4,16 @@ using Domain.Filters;
 using Domain.Models;
 using Infrastructure.Interfaces;
 using Mapster;
+using Application.Validators;
+using FluentValidation;
 
 namespace Application.Services;
 
-public class ProductService(IProductRepository productRepository) : IProductService
+public class ProductService(IProductRepository productRepository, IValidator<ProductDto> productValidation) : IProductService
 {
     public async Task<ProductResponseDto> CreateProductAsync(CreateProductDto productDto)
     {
+        productValidation.ValidateAndThrow(productDto);
         var product = productDto.Adapt<Product>();
         var createdProduct = await productRepository.CreateProductAsync(product);
         createdProduct.TotalAmountSold = 0;

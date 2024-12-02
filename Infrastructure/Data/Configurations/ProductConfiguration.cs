@@ -20,8 +20,6 @@ public class ProductConfiguration(ProductValidationOptions productValidationOpti
         builder.Property(p => p.TotalAmountSold)
             .IsRequired();
         builder.Property(p => p.Rating)
-           .HasMaxLength(productValidationOptions.RatingMaxLength)
-           .HasMaxLength(productValidationOptions.RatingMinLength)
             .IsRequired();
         builder.Property(p => p.Price)
             .IsRequired();

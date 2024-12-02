@@ -7,7 +7,7 @@ using Infrastructure.Options;
 
 namespace Application.Validators;
 
-public class ProductDtoValidator : AbstractValidator<ProductResponseDto>
+public class ProductDtoValidator : AbstractValidator<ProductDto>
 {
     public ProductDtoValidator(IOptions<ProductValidationOptions> productValidationOptions)
     {
@@ -22,11 +22,6 @@ public class ProductDtoValidator : AbstractValidator<ProductResponseDto>
             .NotEmpty().WithMessage("The 'Description' field is required.")
             .MaximumLength(productValidation.DescriptionMaxLength)
             .WithMessage($"The 'Description' field must not exceed {productValidation.DescriptionMaxLength} characters.");
-
-        RuleFor(p => p.Rating)
-             .InclusiveBetween(0, 5)
-             .WithMessage("The 'Rating' field must be between 0 and 5.");
-            
 
         RuleFor(p => p.PhotoUrl)
             .NotEmpty().WithMessage("The 'PhotoUrl' field is required.")

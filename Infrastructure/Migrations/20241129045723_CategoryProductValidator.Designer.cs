@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241122091322_FixValidation2")]
-    partial class FixValidation2
+    [Migration("20241129045723_CategoryProductValidator")]
+    partial class CategoryProductValidator
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,14 +83,16 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
@@ -100,6 +102,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<int>("Rating")
+                        .HasMaxLength(0)
                         .HasColumnType("integer");
 
                     b.Property<List<int>>("Ratings")

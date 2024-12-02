@@ -17,6 +17,9 @@ using Microsoft.OpenApi.Models;
 using Presentation.Extensions;
 using Presentation.Middlewares;
 using Presentation.Services;
+using System.Reflection;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +73,7 @@ builder.Services.AddIdentityCore<User>(
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -84,6 +88,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     options.EnableSensitiveDataLogging();
 });
+
 builder.Services.Configure<CategoryValidationOptions>(builder.Configuration.GetSection("CategoryValidation"));
 builder.Services.AddTransient<IValidator<CategoryDto>, CategoryDtoValidator>();
 builder.Services.Configure<ProductValidationOptions>(builder.Configuration.GetSection("ProductValidation"));
