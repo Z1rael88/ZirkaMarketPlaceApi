@@ -14,7 +14,7 @@ public class ProductController(IProductService productService) : ControllerBase
 {
     [AuthorizeWithRoles(Role.Seller,Role.SystemAdministrator)]
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto productDto)
+    public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto productDto)
     {
         var product = await productService.CreateProductAsync(productDto);
         return Ok(product);
@@ -38,8 +38,20 @@ public class ProductController(IProductService productService) : ControllerBase
     public async Task<IActionResult> GetAllProducts(int pageNumber = 1, int pageSize = 10,
         [FromQuery] ProductFilter? filter = null)
     {
-        var product = await productService.GetAllPaginatedProductsAsync(pageNumber, pageSize, filter);
-        return Ok(product);
+        var products = await productService.GetAllPaginatedProductsAsync(pageNumber, pageSize, filter);
+        return Ok(products);
+    }
+    [HttpGet("bestsellers")]
+    public async Task<IActionResult> GetBestSellers()
+    {
+        var products = await productService.GetBestSellersAsync();
+        return Ok(products);
+    }
+    [HttpGet("new-products")]
+    public async Task<IActionResult> GetNewProducts()
+    {
+        var products = await productService.GetNewProductsAsync();
+        return Ok(products);
     }
     [AuthorizeWithRoles(Role.Seller,Role.SystemAdministrator)]
     [HttpDelete("{productId}")]

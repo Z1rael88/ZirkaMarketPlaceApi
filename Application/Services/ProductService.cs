@@ -7,12 +7,13 @@ using Mapster;
 
 namespace Application.Services;
 
-public class ProductService(IProductRepository productRepository) : IProductService
+public class ProductService(IProductRepository productRepository,IFileStorageService fileStorageService) : IProductService
 {
     public async Task<ProductResponseDto> CreateProductAsync(CreateProductDto productDto)
     {
         var product = productDto.Adapt<Product>();
         var createdProduct = await productRepository.CreateProductAsync(product);
+        createdProduct.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
         createdProduct.TotalAmountSold = 0;
         return createdProduct.Adapt<ProductResponseDto>();
     }
@@ -45,6 +46,17 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     {
         var product = await productRepository.GetAllPaginatedProductsAsync(pageNumber, pageSize, filter);
         return product.Adapt<PaginatedResponse<ProductResponseDto>>();
+    }
+
+    public async Task<IEnumerable<ProductResponseDto>> GetBestSellersAsync()
+    {
+        var sortedProducts = await productRepository.GetBestSellersAsync();
+        return sortedProducts.Adapt<IEnumerable<ProductResponseDto>>();
+    }
+    public async Task<IEnumerable<ProductResponseDto>> GetNewProductsAsync()
+    {
+        var sortedProducts = await productRepository.GetNewProductsAsync();
+        return sortedProducts.Adapt<IEnumerable<ProductResponseDto>>();
     }
 
     public async Task DeleteProductAsync(Guid productId)
