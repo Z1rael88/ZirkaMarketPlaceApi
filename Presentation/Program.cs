@@ -72,8 +72,8 @@ builder.Services.AddIdentityCore<User>(
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -89,10 +89,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.EnableSensitiveDataLogging();
 });
 
-builder.Services.Configure<CategoryValidationOptions>(builder.Configuration.GetSection("CategoryValidation"));
-builder.Services.AddTransient<IValidator<CategoryDto>, CategoryDtoValidator>();
-builder.Services.Configure<ProductValidationOptions>(builder.Configuration.GetSection("ProductValidation"));
-builder.Services.AddTransient<IValidator<ProductResponseDto>, ProductDtoValidator>();
 MapsterConfig.ProductMappings();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddControllers();

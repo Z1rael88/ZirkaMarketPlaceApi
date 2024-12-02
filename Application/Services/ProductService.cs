@@ -9,17 +9,17 @@ using FluentValidation;
 
 namespace Application.Services;
 
-public class ProductService(IProductRepository productRepository, IValidator<ProductDto> productValidation) : IProductService
+public class ProductService(IProductRepository productRepository, IValidator<CreateProductDto> productValidator) : IProductService
 {
     public async Task<ProductResponseDto> CreateProductAsync(CreateProductDto productDto)
     {
-        productValidation.ValidateAndThrow(productDto);
+        productValidator.ValidateAndThrow(productDto);
         var product = productDto.Adapt<Product>();
         var createdProduct = await productRepository.CreateProductAsync(product);
         createdProduct.TotalAmountSold = 0;
         return createdProduct.Adapt<ProductResponseDto>();
     }
-
+        
     public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto, Guid productId)
     {
         var existingProduct = await productRepository.GetProductByIdAsync(productId);

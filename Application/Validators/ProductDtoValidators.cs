@@ -7,7 +7,7 @@ using Infrastructure.Options;
 
 namespace Application.Validators;
 
-public class ProductDtoValidator : AbstractValidator<ProductDto>
+public class ProductDtoValidator : AbstractValidator<CreateProductDto>
 {
     public ProductDtoValidator(IOptions<ProductValidationOptions> productValidationOptions)
     {
