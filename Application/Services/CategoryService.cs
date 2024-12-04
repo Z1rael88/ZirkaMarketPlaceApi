@@ -20,6 +20,7 @@ public class CategoryService(ICategoryRepository categoryRepository, IValidator<
 
     public async Task<CategoryResponseDto> UpdateCategoryAsync(CategoryDto categoryDto, Guid categoryId)
     {
+        categoryValidator.ValidateAndThrow(categoryDto);
         var existingCategory = await categoryRepository.GetCategoryByIdAsync(categoryId);
         if (existingCategory == null)
             throw new ArgumentException($"Category with id: {categoryId} not found");

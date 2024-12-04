@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
 
-[Authorize]
 [Route("api/products")]
 [ApiController]
 public class ProductController(IProductService productService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto productDto)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductDto productDto)
     {
         var product = await productService.CreateProductAsync(productDto);
         return Ok(product);
