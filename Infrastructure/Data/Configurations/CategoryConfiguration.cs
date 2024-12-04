@@ -1,19 +1,22 @@
 ﻿using Domain.Models;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
-public class CategoryConfiguration : BaseEntityConfiguration<Category>
+public class CategoryConfiguration(CategoryValidationOptions categoryValidationOptions) : BaseEntityConfiguration<Category>
 {
-      public override void Configure(EntityTypeBuilder<Category> builder)
-      {
-           base.Configure(builder);
-           builder.Property(c => c.Name)
-               .IsRequired();
-           builder.Property(c => c.Description)
-               .IsRequired();
-           builder.Property(c => c.PhotoUrl)
-               .IsRequired();
-      }
+    public override void Configure(EntityTypeBuilder<Category> builder)
+    {
+        base.Configure(builder);
+        builder.Property(c => c.Name)
+         .HasMaxLength(categoryValidationOptions.NameMaxLength)
+            .IsRequired();
+        builder.Property(c => c.Description)
+         .HasMaxLength(categoryValidationOptions.DescriptionMaxLength)
+            .IsRequired();
+        builder.Property(c => c.PhotoUrl)
+            .IsRequired();
+    }
 }
 

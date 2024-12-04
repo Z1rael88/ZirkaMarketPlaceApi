@@ -2,7 +2,6 @@ using Application.Dtos;
 using Application.Interfaces;
 using Domain.Enums;
 using Domain.Filters;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Helpers;
 
@@ -14,7 +13,7 @@ public class ProductController(IProductService productService) : ControllerBase
 {
     [AuthorizeWithRoles(Role.Seller,Role.SystemAdministrator)]
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto productDto)
+    public async Task<IActionResult> CreateProduct([FromForm] ProductDto productDto)
     {
         var product = await productService.CreateProductAsync(productDto);
         return Ok(product);

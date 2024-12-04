@@ -1,5 +1,6 @@
 using Application.Exceptions;
 using Domain.Constants;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Middlewares
@@ -57,11 +58,15 @@ namespace Presentation.Middlewares
                     statusCode = StatusCodes.Status400BadRequest;
                     errors.Add(ex.Message);
                     break;
+                case FluentValidation.ValidationException:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    message = ex.Message;
+                    break;
                 case UnauthorizedAccessException:
                     statusCode = StatusCodes.Status401Unauthorized;
                     message = ex.Message;
                     break;
-
+           
             }
 
             return (statusCode, message, errors);

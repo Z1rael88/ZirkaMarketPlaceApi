@@ -2,15 +2,17 @@ using Application.Dtos;
 using Application.Interfaces;
 using Domain.Filters;
 using Domain.Models;
+using FluentValidation;
 using Infrastructure.Interfaces;
 using Mapster;
 
 namespace Application.Services;
 
-public class ProductService(IProductRepository productRepository,IFileStorageService fileStorageService) : IProductService
+public class ProductService(IProductRepository productRepository,IFileStorageService fileStorageService,IValidator<ProductDto> productValidator) : IProductService
 {
-    public async Task<ProductResponseDto> CreateProductAsync(CreateProductDto productDto)
+    public async Task<ProductResponseDto> CreateProductAsync(ProductDto productDto)
     {
+        productValidator.ValidateAndThrow(productDto);
         var product = productDto.Adapt<Product>();
         var createdProduct = await productRepository.CreateProductAsync(product);
         createdProduct.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
@@ -20,6 +22,7 @@ public class ProductService(IProductRepository productRepository,IFileStorageSer
 
     public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto, Guid productId)
     {
+        productValidator.ValidateAndThrow(productDto);
         var existingProduct = await productRepository.GetProductByIdAsync(productId);
         productDto.Adapt(existingProduct);
         var updatedProduct = await productRepository.UpdateProductAsync(existingProduct);

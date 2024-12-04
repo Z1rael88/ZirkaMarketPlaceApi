@@ -1,15 +1,18 @@
 ﻿using Application.Dtos;
 using Application.Interfaces;
+using Application.Validators;
 using Domain.Models;
+using FluentValidation;
 using Infrastructure.Interfaces;
 using Mapster;
 
 namespace Application.Services;
 
-public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
+public class CategoryService(ICategoryRepository categoryRepository, IValidator<CategoryDto> categoryValidator) : ICategoryService
 {
     public async Task<CategoryResponseDto> CreateCategoryAsync(CategoryDto categoryDto)
     {
+        categoryValidator.ValidateAndThrow(categoryDto);
         var category = categoryDto.Adapt<Category>();
         var createdCategory = await categoryRepository.CreateCategoryAsync(category);
         return createdCategory.Adapt<CategoryResponseDto>();
@@ -17,6 +20,7 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
 
     public async Task<CategoryResponseDto> UpdateCategoryAsync(CategoryDto categoryDto, Guid categoryId)
     {
+        categoryValidator.ValidateAndThrow(categoryDto);
         var existingCategory = await categoryRepository.GetCategoryByIdAsync(categoryId);
         if (existingCategory == null)
             throw new ArgumentException($"Category with id: {categoryId} not found");
