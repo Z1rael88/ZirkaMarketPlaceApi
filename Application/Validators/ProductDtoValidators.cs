@@ -22,17 +22,6 @@ public class ProductDtoValidator : AbstractValidator<ProductDto>
             .NotEmpty().WithMessage("The 'Description' field is required.")
             .MaximumLength(productValidation.DescriptionMaxLength)
             .WithMessage($"The 'Description' field must not exceed {productValidation.DescriptionMaxLength} characters.");
-
-        RuleFor(p => p.PhotoUrl)
-            .NotEmpty().WithMessage("The 'PhotoUrl' field is required.")
-            .Must(IsValidUrl).WithMessage("The 'PhotoUrl' field must be a valid URL.");
-
-
-    }
-
-    private bool IsValidUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
     }
 }
 
