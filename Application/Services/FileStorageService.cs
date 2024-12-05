@@ -1,3 +1,4 @@
+using System.Text;
 using Application.Interfaces;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
@@ -30,5 +31,6 @@ namespace Application.Services
             await _storageClient.UploadObjectAsync(_bucketName, objectName, file.ContentType, stream);
             return $"https://storage.googleapis.com/{_bucketName}/{objectName}";
         }
+       
     }
 }
