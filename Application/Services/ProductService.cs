@@ -1,5 +1,6 @@
 using System.Text;
 using Application.Dtos;
+using Application.Helpers;
 using Application.Interfaces;
 using Domain.Filters;
 using Domain.Models;
@@ -18,11 +19,17 @@ public class ProductService(
     public async Task<ProductResponseDto> CreateProductAsync(ProductDto productDto)
     {
         productValidator.ValidateAndThrow(productDto);
+        string photoUrlBase64 = null;
+        if (productDto.PhotoUrl != null)
+        {
+            photoUrlBase64 = await ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(productDto.PhotoUrl);
+        }
+
         var product = productDto.Adapt<Product>();
+        product.PhotoUrl = photoUrlBase64; 
+        product.TotalAmountSold = 0;
         var createdProduct = await productRepository.CreateProductAsync(product);
-        var photoUrlFile = ConvertStringToIFormFile(productDto.PhotoUrl);
-        createdProduct.PhotoUrl = await fileStorageService.UploadPhotoAsync(photoUrlFile, "product-photos");
-        createdProduct.TotalAmountSold = 0;
+        createdProduct.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
         return createdProduct.Adapt<ProductResponseDto>();
     }
 

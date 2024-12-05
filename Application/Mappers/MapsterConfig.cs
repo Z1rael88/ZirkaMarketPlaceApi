@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.Helpers;
 using Domain.Models;
 using Mapster;
 
@@ -14,7 +15,7 @@ public static class MapsterConfig
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.AvailableAmount, src => src.AvailableAmount)
             .Map(dest => dest.Price, src => src.Price)
-            .Map(dest => dest.PhotoUrl, src => src.PhotoUrl)
+            .Map(dest => dest.PhotoUrl, src => ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(src.PhotoUrl))
             .Ignore(src => src.Rating)
             .Ignore(src => src.Ratings)
             .Ignore(src => src.TotalAmountSold);
