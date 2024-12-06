@@ -120,6 +120,10 @@ await RolesInitializer.InitializeRolesAsync(app.Services);
 await SystemAdministratorInitializer.InitializeSystemAdministratorAsync(app.Services, builder.Configuration);
 app.UseMiddleware<GlobalExceptionHandler>();
 app.UseCors("AllowReactApp");
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict
+});
 app.MapControllers();
 app.UseHttpsRedirection();
 app.Run();
