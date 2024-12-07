@@ -9,4 +9,5 @@ public class ProductDto
     public decimal Price { get; set; }
     public IFormFile PhotoUrl { get; set; }
     public int AvailableAmount  { get; set; }
+    public Guid CategoryId { get; set; }
 }

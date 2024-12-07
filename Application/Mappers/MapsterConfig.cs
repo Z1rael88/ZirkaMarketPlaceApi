@@ -15,6 +15,7 @@ public static class MapsterConfig
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.AvailableAmount, src => src.AvailableAmount)
             .Map(dest => dest.Price, src => src.Price)
+            .Map(dest => dest.CategoryId,src =>src.CategoryId)
             .Map(dest => dest.PhotoUrl, src => ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(src.PhotoUrl))
             .Ignore(src => src.Rating)
             .Ignore(src => src.Ratings)

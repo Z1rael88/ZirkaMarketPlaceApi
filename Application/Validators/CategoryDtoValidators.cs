@@ -2,9 +2,6 @@
 using Application.Dtos;
 using Microsoft.Extensions.Options;
 using Infrastructure.Options;
-
-
-
 namespace Application.Validators;
 
 public class CategoryDtoValidator : AbstractValidator<CategoryDto>
@@ -23,15 +20,7 @@ public class CategoryDtoValidator : AbstractValidator<CategoryDto>
             .MaximumLength(categoryValidation.DescriptionMaxLength)
             .WithMessage($"The 'Description' field must not exceed {categoryValidation.DescriptionMaxLength} characters.");
 
-
         RuleFor(c => c.PhotoUrl)
-            .NotEmpty().WithMessage("The 'PhotoUrl' field is required.")
-            .Must(IsValidUrl).WithMessage("The 'PhotoUrl' field must be a valid URL.");
-
-    }
-
-    private bool IsValidUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
+            .NotEmpty().WithMessage("The 'PhotoUrl' field is required.");
     }
 }
