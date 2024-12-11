@@ -9,6 +9,7 @@ using Domain.Models;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,56 +20,57 @@ public class UserService(
     IUserRepository userRepository,
     UserManager<User> userManager,
     RoleManager<IdentityRole<Guid>> roleManager,
-    IOptions<JwtOptions> jwtOptions) : IUserService
+    IOptions<JwtOptions> jwtOptions,
+    IHttpContextAccessor httpContextAccessor) : IUserService
 {
-    public async Task<BaseUserDto> RegisterUserAsync(RegisterUserDto registerUserDto)
+    public async Task<BaseUserResponseDto> RegisterUserAsync(RegisterUserDto registerUserDto)
     {
         var roleName = registerUserDto.Role.ToString();
         await ValidateRoleAsync(registerUserDto.Role);
         var newUser = registerUserDto.Adapt<User>();
         await CreateUserAndAssignRoleAsync(newUser, registerUserDto.Password, roleName);
-        var userDto = newUser.Adapt<BaseUserDto>();
+        var userDto = newUser.Adapt<BaseUserResponseDto>();
         userDto.Role = registerUserDto.Role;
         return userDto;
     }
 
-    public async Task<BaseUserDto> UpdateUserAsync(BaseUserDto baseUserDto, Guid userId)
+    public async Task<BaseUserResponseDto> UpdateUserAsync(BaseUserDto baseUserDto, Guid userId)
     {
         var user = await GetUserByIdAsync(userId);
         await UpdateUserRoleAsync(user, baseUserDto.Role.ToString());
         var userToUpdate = baseUserDto.Adapt<User>();
         userToUpdate.Id = userId;
         var updatedUser = await userRepository.UpdateUserAsync(userToUpdate);
-        var updatedUserDto = updatedUser.Adapt<BaseUserDto>();
+        var updatedUserDto = updatedUser.Adapt<BaseUserResponseDto>();
         updatedUserDto.Role = baseUserDto.Role;
         updatedUserDto.UserName = baseUserDto.UserName;
         return updatedUserDto;
     }
 
-    public async Task<BaseUserDto> GetUserAsync(Guid userId)
+    public async Task<BaseUserResponseDto> GetUserAsync(Guid userId)
     {
         var user = await userRepository.GetUserByIdAsync(userId);
         
         var roleString = (await userManager.GetRolesAsync(user)).SingleOrDefault();
         var userRole = Enum.TryParse<Role>(roleString, out var parsedRole) ? parsedRole : default;
         
-        var userDto = user.Adapt<BaseUserDto>();
+        var userDto = user.Adapt<BaseUserResponseDto>();
         userDto.Role = userRole;
         if (user.UserName != null) userDto.UserName = user.UserName;
         return userDto;
     }
 
-    public async Task<IEnumerable<BaseUserDto>> GetAllUsersAsync()
+    public async Task<IEnumerable<BaseUserResponseDto>> GetAllUsersAsync()
     {
         var users = await userRepository.GetAllUsersAsync();
-        var userDtos = new List<BaseUserDto>();
+        var userDtos = new List<BaseUserResponseDto>();
 
         foreach (var user in users)
         {
             var roleString = (await userManager.GetRolesAsync(user)).SingleOrDefault();
             var userRole = Enum.TryParse<Role>(roleString, out var parsedRole) ? parsedRole : default;
 
-            var userDto = user.Adapt<BaseUserDto>();
+            var userDto = user.Adapt<BaseUserResponseDto>();
             userDto.Role = userRole;
             userDtos.Add(userDto);
         }
@@ -110,6 +112,10 @@ public class UserService(
         var role = await GetRoleByUserAsync(user);
         var newAcсessToken = GenerateAccessToken(userProfileId, role);
         var newRefreshToken = GenerateRefreshToken(userProfileId);
+        
+        WriteTokenToCookies("AccessToken", newAcсessToken, jwtOptions.Value.AccessTokenExpiryMinutes);
+        WriteTokenToCookies("RefreshToken", newRefreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
+
         return CreateTokensDto(newAcсessToken, newRefreshToken);
     }
 
@@ -130,7 +136,22 @@ public class UserService(
         var role = await GetRoleByUserAsync(user);
         var accessToken = GenerateAccessToken(user.Id, role);
         var refreshToken = GenerateRefreshToken(user.Id);
+        
+        WriteTokenToCookies("AccessToken", accessToken, jwtOptions.Value.AccessTokenExpiryMinutes);
+        WriteTokenToCookies("RefreshToken", refreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
         return CreateTokensDto(accessToken, refreshToken);
+    }
+    private void WriteTokenToCookies(string key, string token, int expiryMinutes)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true, 
+            Secure = true,   
+            SameSite = SameSiteMode.Strict, 
+            Expires = DateTime.UtcNow.AddMinutes(expiryMinutes)
+        };
+
+        httpContextAccessor.HttpContext!.Response.Cookies.Append(key, token, cookieOptions);
     }
 
     private string GenerateAccessToken(Guid userProfileId, string role)
