@@ -28,6 +28,19 @@ namespace Presentation.Extensions
                 .AddJwtBearer(
                     options =>
                     {
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                var token = context.Request.Cookies["AccessToken"];
+                                if (!string.IsNullOrEmpty(token))
+                                {
+                                    context.Token = token;
+                                }
+
+                                return Task.CompletedTask;
+                            }
+                        };
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
@@ -41,7 +54,13 @@ namespace Presentation.Extensions
                             ClockSkew = TimeSpan.Zero,
                         };
                     }
-                );
+                )
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "AccessToken"; 
+                    options.SlidingExpiration = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                });
         }
     }
 }

@@ -24,6 +24,13 @@ public class UserController(IUserService userService) : ControllerBase
         var tokens = await userService.LoginAsync(loginDto);
         return Ok(tokens);
     }
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        userService.Logout();
+    
+        return Ok("User logged out");
+    }
 
     [HttpPost("refreshtoken")]
     public async Task<IActionResult> RefreshToken(string accessToken)

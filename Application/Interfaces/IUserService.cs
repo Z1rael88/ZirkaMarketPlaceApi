@@ -11,6 +11,7 @@ public interface IUserService
     Task<BaseUserResponseDto> GetUserAsync(Guid userId);
     Task<IEnumerable<BaseUserResponseDto>> GetAllUsersAsync();
     Task DeleteUserAsync(Guid userId);
+    void Logout();
     Task<TokensDto> LoginWithGoogleAsync(string googleToken);
 
 

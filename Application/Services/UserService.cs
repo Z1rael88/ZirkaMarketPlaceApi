@@ -85,6 +85,12 @@ public class UserService(
         await userRepository.DeleteUserAsync(userId);
     }
 
+    public void Logout()
+    {
+        httpContextAccessor.HttpContext!.Response.Cookies.Delete("AccessToken");
+        httpContextAccessor.HttpContext!.Response.Cookies.Delete("RefreshToken");
+    }
+
     public async Task<TokensDto> RefreshTokenAsync(string refreshToken)
     {
         JwtSecurityTokenHandler tokenHandler = new();
@@ -183,7 +189,7 @@ public class UserService(
         {
             HttpOnly = true, 
             Secure = true,   
-            SameSite = SameSiteMode.Strict, 
+            SameSite = SameSiteMode.None, 
             Expires = DateTime.UtcNow.AddMinutes(expiryMinutes)
         };
 
