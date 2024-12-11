@@ -27,7 +27,6 @@ public class UserRepository(IApplicationDbContext dbContext) : IUserRepository
         var userToUpdate = await GetUserByIdAsync(user.Id);
         userToUpdate.FirstName = user.FirstName;
         userToUpdate.LastName = user.LastName;
-        userToUpdate.Age = user.Age;
         userToUpdate.Email = user.Email;
         await dbContext.SaveChangesAsync();
         return userToUpdate;

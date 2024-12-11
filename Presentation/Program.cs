@@ -1,9 +1,9 @@
-using System.Configuration;
 using Application.Initializers;
 using Application.Interfaces;
 using Application.Mappers;
 using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Infrastructure.Data;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -17,6 +17,8 @@ using Presentation.Middlewares;
 using Presentation.Services;
 using Stripe;
 using ProductService = Application.Services.ProductService;
+using System.Reflection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +71,9 @@ builder.Services.AddIdentityCore<User>(
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
+builder.Services.Configure<CategoryValidationOptions>(builder.Configuration.GetSection("CategoryValidation"));
+builder.Services.Configure<ProductValidationOptions>(builder.Configuration.GetSection("ProductValidation"));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -115,6 +120,10 @@ await RolesInitializer.InitializeRolesAsync(app.Services);
 await SystemAdministratorInitializer.InitializeSystemAdministratorAsync(app.Services, builder.Configuration);
 app.UseMiddleware<GlobalExceptionHandler>();
 app.UseCors("AllowReactApp");
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict
+});
 app.MapControllers();
 app.UseHttpsRedirection();
 app.Run();

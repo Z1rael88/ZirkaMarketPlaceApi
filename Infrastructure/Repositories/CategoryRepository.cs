@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
         {
-            var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+            var category = await dbContext.Categories.Include(c=>c.Products).FirstOrDefaultAsync(c => c.Id == categoryId);
             if (category == null)
                 throw new ArgumentException($"Category with id: {categoryId} not found");
             return category;
@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await dbContext.Categories.ToListAsync();
+            return await dbContext.Categories.Include(c=>c.Products).ToListAsync();
         }
 
         public async Task DeleteCategoryAsync(Guid categoryId)

@@ -1,25 +1,36 @@
+using System.Text;
 using Application.Dtos;
+using Application.Helpers;
 using Application.Interfaces;
 using Domain.Filters;
 using Domain.Models;
+using FluentValidation;
 using Infrastructure.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Services;
 
-public class ProductService(IProductRepository productRepository,IFileStorageService fileStorageService) : IProductService
+public class ProductService(
+    IProductRepository productRepository,
+    IFileStorageService fileStorageService,
+    IValidator<ProductDto> productValidator) : IProductService
 {
-    public async Task<ProductResponseDto> CreateProductAsync(CreateProductDto productDto)
+    public async Task<ProductResponseDto> CreateProductAsync(ProductDto productDto)
     {
+        productValidator.ValidateAndThrow(productDto);
+        var  photoUrlBase64 = await ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(productDto.PhotoUrl);
         var product = productDto.Adapt<Product>();
+        product.PhotoUrl = photoUrlBase64; 
+        product.TotalAmountSold = 0;
         var createdProduct = await productRepository.CreateProductAsync(product);
         createdProduct.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
-        createdProduct.TotalAmountSold = 0;
         return createdProduct.Adapt<ProductResponseDto>();
     }
 
     public async Task<ProductResponseDto> UpdateProductAsync(ProductDto productDto, Guid productId)
     {
+        productValidator.ValidateAndThrow(productDto);
         var existingProduct = await productRepository.GetProductByIdAsync(productId);
         productDto.Adapt(existingProduct);
         var updatedProduct = await productRepository.UpdateProductAsync(existingProduct);
@@ -41,6 +52,7 @@ public class ProductService(IProductRepository productRepository,IFileStorageSer
         product.Rating = updatedRating;
         await productRepository.UpdateProductAsync(product);
     }
+
     public async Task<PaginatedResponse<ProductResponseDto>> GetAllPaginatedProductsAsync(int pageNumber, int pageSize,
         ProductFilter? filter = null)
     {
@@ -53,6 +65,7 @@ public class ProductService(IProductRepository productRepository,IFileStorageSer
         var sortedProducts = await productRepository.GetBestSellersAsync();
         return sortedProducts.Adapt<IEnumerable<ProductResponseDto>>();
     }
+
     public async Task<IEnumerable<ProductResponseDto>> GetNewProductsAsync()
     {
         var sortedProducts = await productRepository.GetNewProductsAsync();
@@ -74,5 +87,19 @@ public class ProductService(IProductRepository productRepository,IFileStorageSer
         }
 
         return 0;
+    }
+
+    private IFormFile ConvertStringToIFormFile(string content, string fileName = "file.txt",
+        string contentType = "text/plain")
+    {
+        byte[] byteArray = Encoding.UTF8.GetBytes(content);
+
+        var stream = new MemoryStream(byteArray);
+
+        IFormFile formFile = new FormFile(stream, 0, byteArray.Length, "file", fileName)
+        {
+            ContentType = contentType
+        };
+        return formFile;
     }
 }
