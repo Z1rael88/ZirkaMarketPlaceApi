@@ -46,7 +46,6 @@ namespace Application.Initializers
                 UserName = userName,
                 FirstName = firstName,
                 LastName = lastName ,
-                Age = 77,
             };
 
             httpContextAccessor.HttpContext = new DefaultHttpContext();
