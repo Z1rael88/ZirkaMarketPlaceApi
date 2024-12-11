@@ -21,13 +21,7 @@ public class UserController(IUserService userService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginUser(LoginDto loginDto)
     {
-        TokensDto tokens;
-
-        if (loginDto.IsGoogleLogin)
-        {
-            tokens = await userService.LoginWithGoogleAsync(loginDto.GoogleToken);
-        }
-        tokens = await userService.LoginAsync(loginDto);
+        var tokens = await userService.LoginAsync(loginDto);
         return Ok(tokens);
     }
 
