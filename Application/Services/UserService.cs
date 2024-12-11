@@ -117,7 +117,7 @@ public class UserService(
         WriteTokenToCookies("AccessToken", newAcсessToken, jwtOptions.Value.AccessTokenExpiryMinutes);
         WriteTokenToCookies("RefreshToken", newRefreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
 
-        return CreateTokensDto(newAcсessToken, newRefreshToken);
+        return CreateTokensDto(newAcсessToken, newRefreshToken,user.Id);
     }
 
     public async Task<TokensDto> LoginAsync(LoginDto loginDto)
@@ -140,7 +140,7 @@ public class UserService(
         
         WriteTokenToCookies("AccessToken", accessToken, jwtOptions.Value.AccessTokenExpiryMinutes);
         WriteTokenToCookies("RefreshToken", refreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
-        return CreateTokensDto(accessToken, refreshToken);
+        return CreateTokensDto(accessToken, refreshToken,user.Id);
     }
     public async Task<TokensDto> LoginWithGoogleAsync(string googleToken)
     {
@@ -157,7 +157,7 @@ public class UserService(
         var role = await GetRoleByUserAsync(user);
         var accessToken = GenerateAccessToken(user.Id, role);
         var refreshToken = GenerateRefreshToken(user.Id);
-        return CreateTokensDto(accessToken, refreshToken);
+        return CreateTokensDto(accessToken, refreshToken,user.Id);
     }
 
     private async Task<GoogleJsonWebSignature.Payload> ValidateGoogleTokenAsync(string googleToken)
@@ -276,7 +276,7 @@ public class UserService(
         }
     }
 
-    private TokensDto CreateTokensDto(string accessToken, string refreshToken)
+    private TokensDto CreateTokensDto(string accessToken, string refreshToken, Guid userId)
     {
         var refreshTokenExpiryTime = jwtOptions.Value.RefreshTokenExpiryMinutes;
         var accessTokenExpiryTime = jwtOptions.Value.AccessTokenExpiryMinutes;
@@ -288,6 +288,7 @@ public class UserService(
             RefreshToken = refreshToken,
             RefreshTokenExpirationDate = refreshTokenExpirationDate,
             AccessTokenExpirationDate = accessTokenExpirationDate,
+            UserId = userId
         };
     }
 

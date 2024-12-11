@@ -9,4 +9,5 @@ public class TokensDto
     public required DateTime AccessTokenExpirationDate { get; set; }
 
     public required DateTime RefreshTokenExpirationDate { get; set; }
+    public required Guid UserId { get; set; }
 }
