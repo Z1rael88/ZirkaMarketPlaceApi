@@ -12,6 +12,16 @@ public class UserRepository(IApplicationDbContext dbContext) : IUserRepository
         await dbContext.SaveChangesAsync();
         return createdUser.Entity;
     }
+
+    public async Task<User> GetUserByEmailAsync(string email)
+    {
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null)
+        {
+            throw new ArgumentException($"User with email: {email} not found");
+        }
+        return user;
+    }
     public async Task<User> UpdateUserAsync(User user)
     {
         var userToUpdate = await GetUserByIdAsync(user.Id);

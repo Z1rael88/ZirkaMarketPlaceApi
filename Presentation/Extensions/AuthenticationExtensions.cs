@@ -12,6 +12,7 @@ namespace Presentation.Extensions
             IConfiguration configuration)
         {
             var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+            var googleAuthOptions = configuration.GetSection("GoogleAuth");
 
             services.AddAuthentication(
                     options =>
@@ -19,6 +20,11 @@ namespace Presentation.Extensions
                         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = googleAuthOptions["ClientId"]!;
+                    options.ClientSecret = googleAuthOptions["ClientSecret"]!;
+                })
                 .AddJwtBearer(
                     options =>
                     {
@@ -34,7 +40,8 @@ namespace Presentation.Extensions
                             RequireExpirationTime = true,
                             ClockSkew = TimeSpan.Zero,
                         };
-                    });
+                    }
+                );
         }
     }
 }

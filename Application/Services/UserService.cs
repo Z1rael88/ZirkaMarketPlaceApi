@@ -6,6 +6,7 @@ using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Enums;
 using Domain.Models;
+using Google.Apis.Auth;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Mapster;
@@ -141,6 +142,41 @@ public class UserService(
         WriteTokenToCookies("RefreshToken", refreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
         return CreateTokensDto(accessToken, refreshToken);
     }
+    public async Task<TokensDto> LoginWithGoogleAsync(string googleToken)
+    {
+        var payload = await ValidateGoogleTokenAsync(googleToken);
+        if (payload == null)
+        {
+            throw new UnauthorizedAccessException("Invalid Google token.");
+        }
+
+        var email = payload.Email;
+
+        var user = await userRepository.GetUserByEmailAsync(email);
+
+        var role = await GetRoleByUserAsync(user);
+        var accessToken = GenerateAccessToken(user.Id, role);
+        var refreshToken = GenerateRefreshToken(user.Id);
+        return CreateTokensDto(accessToken, refreshToken);
+    }
+
+    private async Task<GoogleJsonWebSignature.Payload> ValidateGoogleTokenAsync(string googleToken)
+    {
+        var settings = new GoogleJsonWebSignature.ValidationSettings
+        {
+            Audience = new List<string> { "YourGoogleClientId" } // Add your Google Client ID
+        };
+
+        try
+        {
+            return await GoogleJsonWebSignature.ValidateAsync(googleToken, settings);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private void WriteTokenToCookies(string key, string token, int expiryMinutes)
     {
         var cookieOptions = new CookieOptions

@@ -17,25 +17,35 @@ public class UserController(IUserService userService) : ControllerBase
         var user = await userService.RegisterUserAsync(registerUserDto);
         return Ok(user);
     }
-   [HttpPost("login")]
+
+    [HttpPost("login")]
     public async Task<IActionResult> LoginUser(LoginDto loginDto)
     {
-        var tokens = await userService.LoginAsync(loginDto);
+        TokensDto tokens;
+
+        if (loginDto.IsGoogleLogin)
+        {
+            tokens = await userService.LoginWithGoogleAsync(loginDto.GoogleToken);
+        }
+        tokens = await userService.LoginAsync(loginDto);
         return Ok(tokens);
     }
+
     [HttpPost("refreshtoken")]
     public async Task<IActionResult> RefreshToken(string accessToken)
     {
         var tokens = await userService.RefreshTokenAsync(accessToken);
         return Ok(tokens);
     }
+
     [Authorize]
     [HttpPut("{userId}")]
-    public async Task<IActionResult> UpdateUser(BaseUserDto baseUserDto,Guid userId)
+    public async Task<IActionResult> UpdateUser(BaseUserDto baseUserDto, Guid userId)
     {
-        var user = await userService.UpdateUserAsync(baseUserDto,userId);
+        var user = await userService.UpdateUserAsync(baseUserDto, userId);
         return Ok(user);
     }
+
     [Authorize]
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetUser(Guid userId)
@@ -43,6 +53,7 @@ public class UserController(IUserService userService) : ControllerBase
         var user = await userService.GetUserAsync(userId);
         return Ok(user);
     }
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
@@ -50,11 +61,12 @@ public class UserController(IUserService userService) : ControllerBase
         var users = await userService.GetAllUsersAsync();
         return Ok(users);
     }
+
     [AuthorizeWithRoles(Role.SystemAdministrator)]
     [HttpDelete("{userId}")]
     public async Task<IActionResult> DeleteUser(Guid userId)
     {
-       await userService.DeleteUserAsync(userId);
-       return NoContent();
+        await userService.DeleteUserAsync(userId);
+        return NoContent();
     }
 }
