@@ -10,4 +10,5 @@ public class ProductDto
     public IFormFile PhotoUrl { get; set; }
     public int AvailableAmount  { get; set; }
     public Guid CategoryId { get; set; }
+    public Guid UserId { get; set; }
 }

@@ -1,4 +1,5 @@
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations
@@ -18,6 +19,10 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
             builder.HasIndex(a => a.UserName)
                 .IsUnique();
+            builder.HasMany(p => p.Products)
+                .WithOne(u=>u.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

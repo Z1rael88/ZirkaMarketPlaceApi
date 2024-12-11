@@ -12,4 +12,5 @@ public class User :IdentityUser<Guid>, IBaseEntity
     public DateTime UpdatedDate { get; set; }
     public Guid UpdatedBy { get; set; }
     public bool IsDeleted { get; set; }
+    public ICollection<Product> Products { get; set; }
 }

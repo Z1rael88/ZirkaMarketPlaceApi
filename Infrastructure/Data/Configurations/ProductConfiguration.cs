@@ -26,9 +26,13 @@ public class ProductConfiguration(ProductValidationOptions productValidationOpti
             .IsRequired();
         builder.Property(p => p.PhotoUrl)
             .IsRequired();
-            builder.HasOne(p => p.Category)
+        builder.HasOne(p => p.Category)
             .WithMany(c=>c.Products) 
             .HasForeignKey(p => p.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(p => p.User)
+            .WithMany(u=>u.Products)
+            .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

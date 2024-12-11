@@ -10,4 +10,5 @@ public class ProductResponseDto
     public decimal Price { get; set; }
     public string PhotoUrl { get; set; }
     public int AvailableAmount  { get; set; }
+    public Guid UserId { get; set; }
 }
