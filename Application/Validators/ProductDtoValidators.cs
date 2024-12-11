@@ -2,9 +2,6 @@
 using Application.Dtos;
 using Microsoft.Extensions.Options;
 using Infrastructure.Options;
-
-
-
 namespace Application.Validators;
 
 public class ProductDtoValidator : AbstractValidator<ProductDto>

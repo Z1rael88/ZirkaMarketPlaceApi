@@ -10,4 +10,6 @@ public class Product : BaseEntity
     public string PhotoUrl { get; set; }
     public int AvailableAmount { get; set; }
     public int TotalAmountSold { get; set; }
+    public Category Category { get; set; }
+    public Guid CategoryId { get; set; }
 }

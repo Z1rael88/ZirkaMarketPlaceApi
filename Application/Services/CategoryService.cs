@@ -1,4 +1,5 @@
 ﻿using Application.Dtos;
+using Application.Helpers;
 using Application.Interfaces;
 using Application.Validators;
 using Domain.Models;
@@ -8,13 +9,16 @@ using Mapster;
 
 namespace Application.Services;
 
-public class CategoryService(ICategoryRepository categoryRepository, IValidator<CategoryDto> categoryValidator) : ICategoryService
+public class CategoryService(ICategoryRepository categoryRepository,IFileStorageService fileStorageService, IValidator<CategoryDto> categoryValidator) : ICategoryService
 {
     public async Task<CategoryResponseDto> CreateCategoryAsync(CategoryDto categoryDto)
     {
         categoryValidator.ValidateAndThrow(categoryDto);
+        var  photoUrlBase64 = await ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(categoryDto.PhotoUrl);
         var category = categoryDto.Adapt<Category>();
+        category.PhotoUrl = photoUrlBase64;
         var createdCategory = await categoryRepository.CreateCategoryAsync(category);
+        createdCategory.PhotoUrl = await fileStorageService.UploadPhotoAsync(categoryDto.PhotoUrl, "category-photos");
         return createdCategory.Adapt<CategoryResponseDto>();
     }
 

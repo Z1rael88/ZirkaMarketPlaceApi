@@ -1,5 +1,6 @@
 using Domain.Models;
 using Infrastructure.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
@@ -25,5 +26,9 @@ public class ProductConfiguration(ProductValidationOptions productValidationOpti
             .IsRequired();
         builder.Property(p => p.PhotoUrl)
             .IsRequired();
+            builder.HasOne(p => p.Category)
+            .WithMany(c=>c.Products) 
+            .HasForeignKey(p => p.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

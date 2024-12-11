@@ -13,7 +13,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
 {
     [AuthorizeWithRoles(Role.SystemAdministrator)]
     [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody]CategoryDto categoryDto)
+    public async Task<IActionResult> CreateCategory([FromForm]CategoryDto categoryDto)
     {
         var category = await categoryService.CreateCategoryAsync(categoryDto);
         return Ok(category);

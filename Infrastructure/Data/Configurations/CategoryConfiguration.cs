@@ -17,6 +17,9 @@ public class CategoryConfiguration(CategoryValidationOptions categoryValidationO
             .IsRequired();
         builder.Property(c => c.PhotoUrl)
             .IsRequired();
+        builder.HasMany(c => c.Products)
+            .WithOne(p => p.Category)
+            .HasForeignKey(p => p.CategoryId);
     }
 }
 
