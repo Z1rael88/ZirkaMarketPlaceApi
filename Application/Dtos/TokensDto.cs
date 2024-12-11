@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Application.Dtos;
 
 public class TokensDto
@@ -10,4 +12,5 @@ public class TokensDto
 
     public required DateTime RefreshTokenExpirationDate { get; set; }
     public required Guid UserId { get; set; }
+    public string Role { get; set; }
 }
