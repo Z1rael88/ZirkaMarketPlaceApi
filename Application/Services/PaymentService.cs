@@ -54,6 +54,7 @@ public class PaymentService(IProductRepository productRepository) : IPaymentServ
             {
                 product.AvailableAmount -= purchaseItem.Quantity;
                 product.TotalAmountSold += purchaseItem.Quantity;
+               await productRepository.SaveChangesAsync();
             }
         }
     }

@@ -83,4 +83,8 @@ public class ProductRepository(IApplicationDbContext dbContext) : IProductReposi
     {
         return await dbContext.Products.OrderByDescending(p => p.CreatedDate).Take(10).ToListAsync();
     }
+    public async Task SaveChangesAsync()
+    {
+        await dbContext.SaveChangesAsync();
+    }
 }
