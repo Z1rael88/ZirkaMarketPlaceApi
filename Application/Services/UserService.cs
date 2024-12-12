@@ -91,8 +91,10 @@ public class UserService(
         httpContextAccessor.HttpContext!.Response.Cookies.Delete("RefreshToken");
     }
 
-    public async Task<TokensDto> RefreshTokenAsync(string refreshToken)
+    public async Task<TokensDto> RefreshTokenAsync()
     {
+        var refreshToken = httpContextAccessor.HttpContext.Request.Cookies["RefreshToken"];
+        Console.WriteLine(refreshToken);
         JwtSecurityTokenHandler tokenHandler = new();
         TokenValidationParameters validationParameters = new()
         {
@@ -128,6 +130,7 @@ public class UserService(
 
     public async Task<TokensDto> LoginAsync(LoginDto loginDto)
     {
+        
         var user = await userManager.FindByNameAsync(loginDto.UserName);
         if (user == null)
         {

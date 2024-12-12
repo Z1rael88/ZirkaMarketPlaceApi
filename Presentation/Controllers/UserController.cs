@@ -33,9 +33,9 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPost("refreshtoken")]
-    public async Task<IActionResult> RefreshToken(string accessToken)
+    public async Task<IActionResult> RefreshToken()
     {
-        var tokens = await userService.RefreshTokenAsync(accessToken);
+        var tokens = await userService.RefreshTokenAsync();
         return Ok(tokens);
     }
 
