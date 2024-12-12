@@ -19,12 +19,10 @@ public class ProductService(
     public async Task<ProductResponseDto> CreateProductAsync(ProductDto productDto)
     {
         productValidator.ValidateAndThrow(productDto);
-        var  photoUrlBase64 = await ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(productDto.PhotoUrl);
         var product = productDto.Adapt<Product>();
-        product.PhotoUrl = photoUrlBase64; 
         product.TotalAmountSold = 0;
+        product.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
         var createdProduct = await productRepository.CreateProductAsync(product);
-        createdProduct.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
         return createdProduct.Adapt<ProductResponseDto>();
     }
 

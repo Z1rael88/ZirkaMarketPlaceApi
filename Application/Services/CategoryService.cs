@@ -14,11 +14,9 @@ public class CategoryService(ICategoryRepository categoryRepository,IFileStorage
     public async Task<CategoryResponseDto> CreateCategoryAsync(CategoryDto categoryDto)
     {
         categoryValidator.ValidateAndThrow(categoryDto);
-        var  photoUrlBase64 = await ConverterFromIFormFileToString.ConvertIFormFileToBase64Async(categoryDto.PhotoUrl);
         var category = categoryDto.Adapt<Category>();
-        category.PhotoUrl = photoUrlBase64;
+        category.PhotoUrl = await fileStorageService.UploadPhotoAsync(categoryDto.PhotoUrl, "category-photos");
         var createdCategory = await categoryRepository.CreateCategoryAsync(category);
-        createdCategory.PhotoUrl = await fileStorageService.UploadPhotoAsync(categoryDto.PhotoUrl, "category-photos");
         return createdCategory.Adapt<CategoryResponseDto>();
     }
 
