@@ -122,7 +122,7 @@ app.UseMiddleware<GlobalExceptionHandler>();
 app.UseCors("AllowReactApp");
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Strict
+    MinimumSameSitePolicy = SameSiteMode.None
 });
 app.MapControllers();
 app.UseHttpsRedirection();
