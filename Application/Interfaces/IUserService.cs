@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Google.Apis.Auth;
 
 namespace Application.Interfaces;
 
@@ -12,8 +13,8 @@ public interface IUserService
     Task<IEnumerable<BaseUserResponseDto>> GetAllUsersAsync();
     Task DeleteUserAsync(Guid userId);
     void Logout();
-    Task<TokensDto> LoginWithGoogleAsync(string googleToken);
-
+    Task LoginWithGoogleAsync(string code);
+    string CreateGoogleUrl();
 
 
 }

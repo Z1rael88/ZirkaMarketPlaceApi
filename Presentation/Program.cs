@@ -96,7 +96,7 @@ MapsterConfig.ProductMappings();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 var stripeSection = builder.Configuration.GetSection("Stripe");
 StripeConfiguration.ApiKey = stripeSection["SecretKey"];
-builder.Services.Configure<GoogleStorageOptions>(builder.Configuration.GetSection("GoogleCloud"));
+builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection("Google"));
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {

@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetAllUsersAsync();
     Task DeleteUserAsync(Guid userId);
     Task<User> GetUserByEmailAsync(string email);
+    Task<User?> GetUserByGoogleIdAsync(string googleId);
 }

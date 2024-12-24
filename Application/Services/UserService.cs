@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Application.Services;
 
@@ -22,6 +23,7 @@ public class UserService(
     UserManager<User> userManager,
     RoleManager<IdentityRole<Guid>> roleManager,
     IOptions<JwtOptions> jwtOptions,
+    IOptions<GoogleOptions> googleOptions,
     IHttpContextAccessor httpContextAccessor) : IUserService
 {
     public async Task<BaseUserResponseDto> RegisterUserAsync(RegisterUserDto registerUserDto)
@@ -33,6 +35,38 @@ public class UserService(
         var userDto = newUser.Adapt<BaseUserResponseDto>();
         userDto.Role = registerUserDto.Role;
         return userDto;
+    }
+
+    public async Task<TokensDto> GenerateJwtTokensForGoogleUser(GoogleJsonWebSignature.Payload payload)
+    {
+        string role = null;
+        string roleName = "Buyer";
+        var user = await userRepository.GetUserByGoogleIdAsync(payload.Subject);
+        if (user == null)
+        {
+            user = new User
+            {
+                GoogleId = payload.Subject,
+                FirstName = payload.GivenName,
+                LastName = string.IsNullOrEmpty(payload.FamilyName) ? payload.GivenName : payload.FamilyName,
+                Email = payload.Email,
+                UserName = $"{payload.GivenName}{payload.FamilyName?.Substring(0, 2)}",
+                SecurityStamp = Guid.NewGuid().ToString(), 
+                EmailConfirmed = true, 
+            };
+            await userRepository.AddUserAsync(user);
+            await userManager.AddToRoleAsync(user, roleName);
+        }
+
+        if (!await userManager.IsInRoleAsync(user,roleName))
+        {
+            await userManager.AddToRoleAsync(user, roleName);
+        }
+        role = await GetRoleByUserAsync(user);
+        var accessToken = GenerateAccessToken(user.Id, role);
+        var refreshToken = GenerateRefreshToken(user.Id);
+
+        return CreateTokensDto(accessToken, refreshToken, user.Id, role);
     }
 
     public async Task<BaseUserResponseDto> UpdateUserAsync(BaseUserDto baseUserDto, Guid userId)
@@ -51,10 +85,10 @@ public class UserService(
     public async Task<BaseUserResponseDto> GetUserAsync(Guid userId)
     {
         var user = await userRepository.GetUserByIdAsync(userId);
-        
+
         var roleString = (await userManager.GetRolesAsync(user)).SingleOrDefault();
         var userRole = Enum.TryParse<Role>(roleString, out var parsedRole) ? parsedRole : default;
-        
+
         var userDto = user.Adapt<BaseUserResponseDto>();
         userDto.Role = userRole;
         if (user.UserName != null) userDto.UserName = user.UserName;
@@ -87,8 +121,15 @@ public class UserService(
 
     public void Logout()
     {
-        httpContextAccessor.HttpContext!.Response.Cookies.Delete("AccessToken");
-        httpContextAccessor.HttpContext!.Response.Cookies.Delete("RefreshToken");
+        var accessTokenCookie = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"];
+        var refreshTokenCookie = httpContextAccessor.HttpContext?.Request.Cookies["RefreshToken"];
+
+        if (accessTokenCookie != null && refreshTokenCookie != null)
+        {
+            httpContextAccessor.HttpContext!.Response.Cookies.Delete("AccessToken");
+            httpContextAccessor.HttpContext!.Response.Cookies.Delete("RefreshToken");
+        }
+
     }
 
     public async Task<TokensDto> RefreshTokenAsync()
@@ -121,16 +162,15 @@ public class UserService(
         var role = await GetRoleByUserAsync(user);
         var newAcсessToken = GenerateAccessToken(userProfileId, role);
         var newRefreshToken = GenerateRefreshToken(userProfileId);
-        
+
         WriteTokenToCookies("AccessToken", newAcсessToken, jwtOptions.Value.AccessTokenExpiryMinutes);
         WriteTokenToCookies("RefreshToken", newRefreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
 
-        return CreateTokensDto(newAcсessToken, newRefreshToken,user.Id,role);
+        return CreateTokensDto(newAcсessToken, newRefreshToken, user.Id, role);
     }
 
     public async Task<TokensDto> LoginAsync(LoginDto loginDto)
     {
-        
         var user = await userManager.FindByNameAsync(loginDto.UserName);
         if (user == null)
         {
@@ -146,53 +186,61 @@ public class UserService(
         var role = await GetRoleByUserAsync(user);
         var accessToken = GenerateAccessToken(user.Id, role);
         var refreshToken = GenerateRefreshToken(user.Id);
-        
+
         WriteTokenToCookies("AccessToken", accessToken, jwtOptions.Value.AccessTokenExpiryMinutes);
         WriteTokenToCookies("RefreshToken", refreshToken, jwtOptions.Value.RefreshTokenExpiryMinutes);
-        return CreateTokensDto(accessToken, refreshToken,user.Id,role);
-    }
-    public async Task<TokensDto> LoginWithGoogleAsync(string googleToken)
-    {
-        var payload = await ValidateGoogleTokenAsync(googleToken);
-        if (payload == null)
-        {
-            throw new UnauthorizedAccessException("Invalid Google token.");
-        }
-
-        var email = payload.Email;
-
-        var user = await userRepository.GetUserByEmailAsync(email);
-
-        var role = await GetRoleByUserAsync(user);
-        var accessToken = GenerateAccessToken(user.Id, role);
-        var refreshToken = GenerateRefreshToken(user.Id);
-        return CreateTokensDto(accessToken, refreshToken,user.Id,role);
+        return CreateTokensDto(accessToken, refreshToken, user.Id, role);
     }
 
-    private async Task<GoogleJsonWebSignature.Payload> ValidateGoogleTokenAsync(string googleToken)
+    public async Task LoginWithGoogleAsync(string code)
     {
-        var settings = new GoogleJsonWebSignature.ValidationSettings
-        {
-            Audience = new List<string> { "YourGoogleClientId" } // Add your Google Client ID
-        };
+        var googleOptionsValue = googleOptions.Value;
 
-        try
-        {
-            return await GoogleJsonWebSignature.ValidateAsync(googleToken, settings);
-        }
-        catch
-        {
-            return null;
-        }
+        var clientId = googleOptionsValue.ClientId;
+        var clientSecret = googleOptionsValue.ClientSecret;
+        var redirectUri = "https://localhost:7196/api/users/google-signin";
+
+        using var client = new HttpClient();
+        var tokenResponse = await client.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { "code", code },
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" }
+            }));
+
+        var tokenJson = await tokenResponse.Content.ReadAsStringAsync();
+        var googleTokens = JsonConvert.DeserializeObject<GoogleTokenResponse>(tokenJson);
+
+        var payload = await GoogleJsonWebSignature.ValidateAsync(googleTokens.IdToken);
+
+        await GenerateJwtTokensForGoogleUser(payload);
+    }
+
+    public string CreateGoogleUrl()
+    {
+        var clientId = googleOptions.Value.ClientId;
+        var redirectUri = "https://localhost:7196/api/users/google-signin";
+        var scope = "openid email profile";
+        var state = Guid.NewGuid().ToString();
+
+        return $"https://accounts.google.com/o/oauth2/auth" +
+                            $"?client_id={clientId}" +
+                            $"&redirect_uri={redirectUri}" +
+                            $"&response_type=code" +
+                            $"&scope={scope}" +
+                            $"&state={state}";
     }
 
     private void WriteTokenToCookies(string key, string token, int expiryMinutes)
     {
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true, 
-            Secure = true,   
-            SameSite = SameSiteMode.None, 
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddMinutes(expiryMinutes)
         };
 
@@ -252,7 +300,7 @@ public class UserService(
                 $"That Role with name {role.ToString()} is not found, the Role should be a specified enum value ");
         }
 
-        if ( role == Role.SystemAdministrator)
+        if (role == Role.SystemAdministrator)
         {
             throw new ArgumentException(
                 "You cannot register as a System Administrator");
@@ -285,7 +333,7 @@ public class UserService(
         }
     }
 
-    private TokensDto CreateTokensDto(string accessToken, string refreshToken, Guid userId,string role)
+    private TokensDto CreateTokensDto(string accessToken, string refreshToken, Guid userId, string role)
     {
         var refreshTokenExpiryTime = jwtOptions.Value.RefreshTokenExpiryMinutes;
         var accessTokenExpiryTime = jwtOptions.Value.AccessTokenExpiryMinutes;

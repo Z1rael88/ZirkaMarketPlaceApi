@@ -22,6 +22,15 @@ public class UserRepository(IApplicationDbContext dbContext) : IUserRepository
         }
         return user;
     }
+
+    public async Task<User?> GetUserByGoogleIdAsync(string googleId)
+    {
+        var user = await dbContext.Users.Where(u => u.GoogleId == googleId).SingleOrDefaultAsync();
+        if (user == null)
+            return null;
+        return user;
+    }
+
     public async Task<User> UpdateUserAsync(User user)
     {
         var userToUpdate = await GetUserByIdAsync(user.Id);

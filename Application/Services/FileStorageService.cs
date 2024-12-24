@@ -13,7 +13,7 @@ namespace Application.Services
         private readonly string _bucketName;
         private readonly StorageClient _storageClient;
 
-        public FileStorageService(IOptions<GoogleStorageOptions> options)
+        public FileStorageService(IOptions<GoogleOptions> options)
         {
             _bucketName = options.Value.BucketName;
             var credential = GoogleCredential.FromFile(options.Value.CredentialsPath);

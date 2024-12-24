@@ -24,6 +24,22 @@ public class UserController(IUserService userService) : ControllerBase
         var tokens = await userService.LoginAsync(loginDto);
         return Ok(tokens);
     }
+    
+    [HttpGet("googleLogin")]
+    public IActionResult GetGoogleAuthUrl()
+    {
+        var googleAuthUrl = userService.CreateGoogleUrl();
+        return Ok(new { AuthUrl = googleAuthUrl });
+    }
+    
+    [HttpGet("google-signin")]
+    public async Task<IActionResult> GoogleCallback([FromQuery] string code)
+    {
+        await userService.LoginWithGoogleAsync(code);
+        return Redirect("https://localhost:7196/home");
+    }
+
+
     [HttpPost("logout")]
     public IActionResult Logout()
     {

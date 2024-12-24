@@ -12,7 +12,7 @@ namespace Presentation.Extensions
             IConfiguration configuration)
         {
             var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
-            var googleAuthOptions = configuration.GetSection("GoogleAuth");
+            var googleAuthOptions = configuration.GetSection("Google");
 
             services.AddAuthentication(
                     options =>

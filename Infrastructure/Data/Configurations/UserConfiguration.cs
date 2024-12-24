@@ -14,7 +14,7 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
             builder.HasIndex(a => a.Email)
                 .IsUnique();
-
+            builder.Property(a => a.GoogleId);
             builder.Property(a => a.UserName)
                 .IsRequired();
             builder.HasIndex(a => a.UserName)
