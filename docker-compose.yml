@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: . 
+      dockerfile: Dockerfile 
+    container_name: zirkamarketplaceapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ELASTICSEARCH_URL=http://elasticsearch:9200  
+      - DB_HOST=db  
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./Keys:/Keys     
+    depends_on:
+      - elasticsearch
+      - db 
+    networks:
+      - elastic-network
+      - app-network 
+  
+  db:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: MarketPlaceDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Wiedzmin3Kurwa
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - elastic-network 
+      - app-network 
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      retries: 3
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic-network
+
+networks:
+  elastic-network:
+    driver: bridge
+  app-network:
+    driver: bridge 
+
+volumes:
+  postgres-data:
