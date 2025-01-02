@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Application.Mappers;
 using Application.Services;
 using Domain.Models;
+using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using Infrastructure.Data;
 using Infrastructure.Interfaces;
@@ -12,6 +13,7 @@ using Infrastructure.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Presentation.Extensions;
 using Presentation.Middlewares;
@@ -99,9 +101,19 @@ static class Program
         builder.Services.AddMapster();
         MapsterConfig.ProductMappings();
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+        builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection("Google"));
         var stripeSection = builder.Configuration.GetSection("Stripe");
         StripeConfiguration.ApiKey = stripeSection["SecretKey"];
-        builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection("Google"));
+        
+        builder.Services.Configure<ElasricsearchOptions>(builder.Configuration.GetSection("Elasticsearch"));
+        builder.Services.AddSingleton(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<ElasricsearchOptions>>().Value;
+            var settings = new ElasticsearchClientSettings(new Uri(options.Uri))
+                .DefaultIndex(options.DefaultIndex);
+            return new ElasticsearchClient(settings);
+        });
+
         builder.Services.AddControllers();
         builder.Services.AddCors(options =>
         {

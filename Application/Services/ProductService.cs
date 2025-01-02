@@ -1,19 +1,21 @@
-using System.Text;
 using Application.Dtos;
 using Application.Interfaces;
 using Domain.Filters;
 using Domain.Models;
+using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Mapster;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services;
 
 public class ProductService(
     IProductRepository productRepository,
     IFileStorageService fileStorageService,
-    IValidator<ProductDto> productValidator) : IProductService
+    IValidator<ProductDto> productValidator)
+    : IProductService
 {
     public async Task<ProductResponseDto> CreateProductAsync(ProductDto productDto)
     {
@@ -84,19 +86,5 @@ public class ProductService(
         }
 
         return 0;
-    }
-
-    private IFormFile ConvertStringToIFormFile(string content, string fileName = "file.txt",
-        string contentType = "text/plain")
-    {
-        byte[] byteArray = Encoding.UTF8.GetBytes(content);
-
-        var stream = new MemoryStream(byteArray);
-
-        IFormFile formFile = new FormFile(stream, 0, byteArray.Length, "file", fileName)
-        {
-            ContentType = contentType
-        };
-        return formFile;
     }
 }
