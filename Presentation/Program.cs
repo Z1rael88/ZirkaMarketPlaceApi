@@ -93,6 +93,8 @@ static class Program
         builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         builder.Services.AddScoped<GlobalExceptionHandler>();
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+        builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();//
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));

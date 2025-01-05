@@ -11,4 +11,5 @@ public class ProductResponseDto
     public string PhotoUrl { get; set; }
     public int AvailableAmount  { get; set; }
     public Guid UserId { get; set; }
+    public ICollection<PurchaseItemDto>? Purchases { get; set; }
 }

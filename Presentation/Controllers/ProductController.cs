@@ -1,9 +1,11 @@
 using Application.Dtos;
 using Application.Interfaces;
 using Domain.Enums;
+using Domain.Models;
 using Domain.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Helpers;
+
 
 namespace Presentation.Controllers;
 
@@ -65,5 +67,11 @@ public class ProductController(IProductService productService) : ControllerBase
     {
         await productService.UpdateRatingAsync(productId, rating);
         return Ok();
+    }
+    [HttpGet("status/{status}")]
+    public async Task<IActionResult> GetProductsByStatus(ProductStatus status)
+    {
+        var products = await productService.GetProductsByStatusAsync(status);
+        return Ok(products);
     }
 }

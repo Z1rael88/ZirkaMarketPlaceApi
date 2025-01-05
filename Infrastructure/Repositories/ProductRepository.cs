@@ -133,4 +133,10 @@ public class ProductRepository(ElasticsearchClient client,IOptions<Elasricsearch
            var result = await client.Indices.CreateAsync(elasricsearchOptions.Value.DefaultIndex);
         }
     }
+    public async Task<IEnumerable<Product>> GetProductsByStatusAsync(ProductStatus status)
+    {
+        return await dbContext.Products
+            .Where(p => p.Status == status)
+            .ToListAsync();
+    }
 }

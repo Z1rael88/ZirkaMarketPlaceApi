@@ -32,6 +32,14 @@ public class ProductService(
         productValidator.ValidateAndThrow(productDto);
         var existingProduct = await productRepository.GetProductByIdAsync(productId);
         productDto.Adapt(existingProduct);
+        if (existingProduct.AvailableAmount <= 0)
+        {
+            existingProduct.Status = ProductStatus.Purchased;
+        }
+        else if (existingProduct.AvailableAmount > 0)
+        {
+            existingProduct.Status = ProductStatus.Available;
+        }
         var updatedProduct = await productRepository.UpdateProductAsync(existingProduct);
         return updatedProduct.Adapt<ProductResponseDto>();
     }
@@ -86,5 +94,10 @@ public class ProductService(
         }
 
         return 0;
+    }
+    public async Task<IEnumerable<ProductDto>> GetProductsByStatusAsync(ProductStatus status)
+    {
+        var products = await productRepository.GetProductsByStatusAsync(status);
+        return products.Adapt<IEnumerable<ProductDto>>();
     }
 }
