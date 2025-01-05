@@ -9,6 +9,7 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; }
     DbSet<User> Users { get; }
     DbSet<Category> Categories { get; }
+    DbSet<Purchase> Purchases { get; }
     EntityEntry Entry(object entity);
 
     Task<int> SaveChangesAsync();

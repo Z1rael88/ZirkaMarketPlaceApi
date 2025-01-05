@@ -9,4 +9,5 @@ public class BaseUserDto
     public required string LastName { get; set; }
     public string UserName { get; set; }
     public required Role Role { get; set; }
+    public ICollection<PurchaseItemDto> Purchases { get; set; }
 }

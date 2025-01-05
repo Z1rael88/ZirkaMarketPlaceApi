@@ -92,6 +92,10 @@ static class Program
         builder.Services.AddScoped<IFileStorageService, FileStorageService>();
         builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         builder.Services.AddScoped<GlobalExceptionHandler>();
+        builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+        builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+
+
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {

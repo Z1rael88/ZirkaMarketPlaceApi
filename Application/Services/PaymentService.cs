@@ -5,7 +5,7 @@ using Stripe;
 
 namespace Application.Services;
 
-public class PaymentService(IProductRepository productRepository) : IPaymentService
+public class PaymentService(IProductRepository productRepository, IPurchaseService purchaseService) : IPaymentService
 {
     public async Task<bool> ProcessPaymentAsync(PaymentRequestDto paymentRequestDto)
     {
@@ -54,6 +54,7 @@ public class PaymentService(IProductRepository productRepository) : IPaymentServ
             {
                 product.AvailableAmount -= purchaseItem.Quantity;
                 product.TotalAmountSold += purchaseItem.Quantity;
+                await purchaseService.CreatePurchaseAsync(purchaseItem.UserId, purchaseItem.ProductId, purchaseItem.Quantity);               
                await productRepository.SaveChangesAsync();
             }
         }
