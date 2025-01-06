@@ -68,7 +68,7 @@ public class ProductController(IProductService productService) : ControllerBase
         await productService.UpdateRatingAsync(productId, rating);
         return Ok();
     }
-    [HttpGet("status/{status}")]
+    [HttpGet("byStatus/{status}")]
     public async Task<IActionResult> GetProductsByStatus(ProductStatus status)
     {
         var products = await productService.GetProductsByStatusAsync(status);

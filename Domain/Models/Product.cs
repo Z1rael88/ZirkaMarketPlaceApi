@@ -1,11 +1,11 @@
-using Domain.Enums;
-
 namespace Domain.Models;
 
 public enum ProductStatus
 {
-    Available,
-    Purchased    
+    Available = 0,
+    NotAvailable = 1,
+    OutOfStock = 2,
+    Purchased = 3
 }
 public class Product : BaseEntity
 {

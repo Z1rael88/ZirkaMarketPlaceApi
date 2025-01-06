@@ -23,6 +23,7 @@ public class ProductService(
         var product = productDto.Adapt<Product>();
         product.TotalAmountSold = 0;
         product.PhotoUrl = await fileStorageService.UploadPhotoAsync(productDto.PhotoUrl, "product-photos");
+        product.Status = product.AvailableAmount > 0 ? ProductStatus.Available : ProductStatus.OutOfStock;
         var createdProduct = await productRepository.CreateProductAsync(product);
         return createdProduct.Adapt<ProductResponseDto>();
     }
@@ -32,14 +33,7 @@ public class ProductService(
         productValidator.ValidateAndThrow(productDto);
         var existingProduct = await productRepository.GetProductByIdAsync(productId);
         productDto.Adapt(existingProduct);
-        if (existingProduct.AvailableAmount <= 0)
-        {
-            existingProduct.Status = ProductStatus.Purchased;
-        }
-        else if (existingProduct.AvailableAmount > 0)
-        {
-            existingProduct.Status = ProductStatus.Available;
-        }
+        existingProduct.Status = existingProduct.AvailableAmount > 0 ? ProductStatus.Available : ProductStatus.OutOfStock;
         var updatedProduct = await productRepository.UpdateProductAsync(existingProduct);
         return updatedProduct.Adapt<ProductResponseDto>();
     }

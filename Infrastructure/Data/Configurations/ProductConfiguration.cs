@@ -35,7 +35,13 @@ public class ProductConfiguration(ProductValidationOptions productValidationOpti
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         builder.Property(p => p.Status)
-            .HasConversion<string>();
+            .IsRequired()
+            .HasColumnType("integer")
+            .HasConversion(
+                v => (int)v,          
+                v => (ProductStatus)v 
+            );
+
 
     }
 }

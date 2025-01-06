@@ -107,9 +107,8 @@ namespace Infrastructure.Migrations
                     b.Property<List<int>>("Ratings")
                         .HasColumnType("integer[]");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<int>("TotalAmountSold")
                         .HasColumnType("integer");

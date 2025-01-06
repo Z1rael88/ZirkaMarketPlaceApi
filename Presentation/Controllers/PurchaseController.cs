@@ -11,7 +11,6 @@ namespace Presentation.Controllers;
 [ApiController]
 public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
-    [AuthorizeWithRoles(Role.SystemAdministrator)]
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetAllPurchases(Guid userId)
     {

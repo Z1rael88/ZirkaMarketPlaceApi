@@ -1,5 +1,4 @@
 using Domain.Models;
-using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Dtos;
