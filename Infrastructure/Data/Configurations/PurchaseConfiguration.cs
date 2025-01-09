@@ -16,7 +16,7 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
             .HasForeignKey(p => p.UserId);
 
         builder.HasOne(p => p.Product)
-            .WithMany()
+            .WithMany(p => p.Purchases)
             .HasForeignKey(p => p.ProductId);
 
         builder.Property(p => p.Quantity)

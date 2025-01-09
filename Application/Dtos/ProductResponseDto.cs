@@ -1,4 +1,5 @@
-﻿namespace Application.Dtos;
+﻿using Domain.Models;
+namespace Application.Dtos;
 
 public class ProductResponseDto 
 {
@@ -12,4 +13,5 @@ public class ProductResponseDto
     public int AvailableAmount  { get; set; }
     public Guid UserId { get; set; }
     public ICollection<PurchaseItemDto>? Purchases { get; set; }
+    public ProductStatus Status { get; set; }
 }
