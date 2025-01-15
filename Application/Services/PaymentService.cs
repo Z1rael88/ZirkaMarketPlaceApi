@@ -8,7 +8,7 @@ using Stripe;
 namespace Application.Services;
 
 
-public class PaymentService(IProductRepository productRepository,IEmailService emailService,IApplicationUser user,UserManager<User> userManager) : IPaymentService
+public class PaymentService(IProductRepository productRepository,IEmailService emailService,IApplicationUser user,UserManager<User> userManager, IPurchaseService purchaseService) : IPaymentService
 {
     public async Task<bool> ProcessPaymentAsync(PaymentRequestDto paymentRequestDto)
     {
