@@ -15,4 +15,6 @@ public interface IProductService
     
     Task UpdateRatingAsync(Guid productId,int rating);
     Task DeleteProductAsync(Guid productId);
+    Task<IEnumerable<ProductResponseDto>> GetProductsByStatusAsync(ProductStatus status);
+
 }

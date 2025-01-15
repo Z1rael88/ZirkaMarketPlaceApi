@@ -1,4 +1,4 @@
-  using Domain.Models;
+using Domain.Models;
 using Infrastructure.Data.Configurations;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Interfaces;
@@ -19,6 +19,7 @@ namespace Infrastructure.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Purchase> Purchases { get; set; } 
 
         public async Task<int> SaveChangesAsync()
         {
@@ -43,7 +44,8 @@ namespace Infrastructure.Data
             modelBuilder
                 .ApplyConfiguration(new UserConfiguration())
                 .ApplyConfiguration(new CategoryConfiguration(categoryValidationOptions))
-                .ApplyConfiguration(new ProductConfiguration(productValidationOptions));
+                .ApplyConfiguration(new ProductConfiguration(productValidationOptions))
+                .ApplyConfiguration(new PurchaseConfiguration());
         }
     }
 }

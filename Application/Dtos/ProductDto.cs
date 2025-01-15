@@ -1,3 +1,4 @@
+using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Dtos;
@@ -11,4 +12,5 @@ public class ProductDto
     public int AvailableAmount  { get; set; }
     public Guid CategoryId { get; set; }
     public Guid UserId { get; set; }
+    public ProductStatus Status { get; set; }
 }

@@ -14,4 +14,5 @@ public class User :IdentityUser<Guid>, IBaseEntity
     public bool IsDeleted { get; set; }
     public string? GoogleId { get; set; }
     public ICollection<Product> Products { get; set; }
+    public ICollection<Purchase>? Purchases { get; set; }  
 }
