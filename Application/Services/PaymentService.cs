@@ -1,11 +1,14 @@
 using Application.Dtos;
 using Application.Interfaces;
+using Domain.Models;
 using Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Stripe;
 
 namespace Application.Services;
 
-public class PaymentService(IProductRepository productRepository, IPurchaseService purchaseService) : IPaymentService
+
+public class PaymentService(IProductRepository productRepository,IEmailService emailService,IApplicationUser user,UserManager<User> userManager) : IPaymentService
 {
     public async Task<bool> ProcessPaymentAsync(PaymentRequestDto paymentRequestDto)
     {
@@ -58,6 +61,9 @@ public class PaymentService(IProductRepository productRepository, IPurchaseServi
                await productRepository.SaveChangesAsync();
             }
         }
+
+        var userToSend = await userManager.FindByIdAsync(user.Id.ToString());
+        await emailService.SendEmailAsync(userToSend.Email,products);
     }
 
     private async Task<decimal> CalculateTotalAmount(List<PurchaseItemDto> purchaseItems)

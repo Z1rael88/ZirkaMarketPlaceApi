@@ -64,14 +64,7 @@ public class ProductRepository(ElasticsearchClient client,IOptions<Elasricsearch
                 }
             }));
         }
-
         var response = await client.SearchAsync(searchDescriptor);
-        if (!response.IsValidResponse)
-        {
-            throw new ArgumentException("CHUJLANSUKA");
-        }
-
-
         return new PaginatedResponse<Product>
         {
             TotalCount = (int)response.Total,
