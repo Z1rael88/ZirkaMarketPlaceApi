@@ -10,6 +10,7 @@ using Infrastructure.Data;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Infrastructure.Repositories;
+using Mailjet.Client;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -90,6 +91,7 @@ static class Program
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         builder.Services.AddScoped<GlobalExceptionHandler>();
         builder.Services.AddHttpContextAccessor();
@@ -102,6 +104,7 @@ static class Program
         MapsterConfig.ProductMappings();
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
         builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection("Google"));
+        builder.Services.Configure<MailJetOptions>(builder.Configuration.GetSection("MailJet"));
         var stripeSection = builder.Configuration.GetSection("Stripe");
         StripeConfiguration.ApiKey = stripeSection["SecretKey"];
         
@@ -113,6 +116,14 @@ static class Program
                 .DefaultIndex(options.DefaultIndex);
             return new ElasticsearchClient(settings);
         });
+        builder.Services.AddTransient<IMailjetClient>(sp =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var apiKey = configuration["Mailjet:ApiKey"];
+            var apiSecret = configuration["Mailjet:ApiSecret"];
+            return new MailjetClient(apiKey, apiSecret);
+        });
+
 
         builder.Services.AddControllers();
         builder.Services.AddCors(options =>
