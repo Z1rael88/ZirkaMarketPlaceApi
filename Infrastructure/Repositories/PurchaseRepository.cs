@@ -12,15 +12,22 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
         await dbContext.Purchases.AddAsync(purchase);
         return purchase;
     }
-
-    public async Task<IEnumerable<Purchase>> GetPurchasesByUserIdAsync(Guid userId)
+    public async Task<IEnumerable<Purchase>> GetPurchasesByBuyerIdAsync(Guid buyerId)
     {
         return await dbContext.Purchases
             .Include(p => p.Product)
-            .Where(p => p.UserId == userId)
+            .Where(p => p.UserId == buyerId)
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Purchase>> GetPurchasesBySellerIdAsync(Guid sellerId)
+    {
+        return await dbContext.Purchases
+            .Include(p => p.Product)
+            .Where(p => p.SellerId == sellerId)
+            .ToListAsync();
+    }
+    
     public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();
