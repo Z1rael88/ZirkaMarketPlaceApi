@@ -26,13 +26,6 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         return Ok(purchases);
     }
     
-    [HttpGet("seller/{userId}")]
-    public async Task<IActionResult> GetPurchasesAsSeller(Guid userId)
-    {
-        var purchases = await purchaseService.GetPurchasesBySellerIdAsync(userId);
-        return Ok(purchases);
-    }
-    
     [HttpPatch]
     public async Task<IActionResult> UpdateStatus(Guid purchaseId, PurchaseStatus status)
     {
