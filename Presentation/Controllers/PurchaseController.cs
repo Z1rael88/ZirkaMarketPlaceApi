@@ -1,6 +1,7 @@
 using Application.Dtos;
 using Application.Interfaces;
 using Domain.Enums;
+using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Helpers;
 
@@ -23,5 +24,12 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     {
         var purchases = await purchaseService.GetPurchasesBySellerIdAsync(userId);
         return Ok(purchases);
+    }
+    
+    [HttpPatch]
+    public async Task<IActionResult> UpdateStatus(Guid purchaseId, PurchaseStatus status)
+    {
+        var updatedPurchase = await purchaseService.UpdatePurchaseStatusAsync(purchaseId, status);
+        return Ok(updatedPurchase);
     }
 }
