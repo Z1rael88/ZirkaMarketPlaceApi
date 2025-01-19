@@ -11,10 +11,17 @@ namespace Presentation.Controllers;
 [ApiController]
 public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetAllPurchases(Guid userId)
+    [HttpGet("buyer/{userId}")]
+    public async Task<IActionResult> GetPurchasesAsBuyer(Guid userId)
     {
-        var purchases = await purchaseService.GetPurchasesByUserIdAsync(userId);
+        var purchases = await purchaseService.GetPurchasesByBuyerIdAsync(userId);
+        return Ok(purchases);
+    }
+    
+    [HttpGet("seller/{userId}")]
+    public async Task<IActionResult> GetPurchasesAsSeller(Guid userId)
+    {
+        var purchases = await purchaseService.GetPurchasesBySellerIdAsync(userId);
         return Ok(purchases);
     }
 }

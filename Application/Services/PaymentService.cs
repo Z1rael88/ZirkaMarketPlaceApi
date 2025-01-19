@@ -58,7 +58,7 @@ public class PaymentService(IProductRepository productRepository,IEmailService e
                 product.AvailableAmount -= purchaseItem.Quantity;
                 product.TotalAmountSold += purchaseItem.Quantity;
                 await purchaseService.CreatePurchaseAsync(purchaseItem.UserId, purchaseItem.ProductId, purchaseItem.Quantity);
-               await productRepository.SaveChangesAsync();
+                await productRepository.SaveChangesAsync();
             }
         }
 
