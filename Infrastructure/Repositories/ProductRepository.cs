@@ -65,13 +65,17 @@ public class ProductRepository(ElasticsearchClient client,IOptions<Elasricsearch
             }));
         }
         var response = await client.SearchAsync(searchDescriptor);
-        return new PaginatedResponse<Product>
+        if (response.IsValidResponse)
         {
-            TotalCount = (int)response.Total,
-            Items = response.Documents.ToList(),
-            PageSize = pageSize,
-            PageNumber = pageNumber
-        };
+            return new PaginatedResponse<Product>
+            {
+                TotalCount = (int)response.Total,
+                Items = response.Documents.ToList(),
+                PageSize = pageSize,
+                PageNumber = pageNumber
+            };
+        }
+        throw new Exception("Elasticsearch search failed: " + response.DebugInformation);
     }
 
 

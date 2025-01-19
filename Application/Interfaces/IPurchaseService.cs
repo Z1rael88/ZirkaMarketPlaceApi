@@ -11,5 +11,5 @@ public interface IPurchaseService
     Task<PurchaseDto> UpdatePurchaseStatusAsync(Guid purchaseId, PurchaseStatus status);
     Task<IEnumerable<PurchaseDto>> GetPurchasesByBuyerIdAsync(Guid buyerId);
     Task<IEnumerable<PurchaseDto>> GetPurchasesBySellerIdAsync(Guid sellerId);
-    
+
 }

@@ -12,6 +12,7 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
         await dbContext.Purchases.AddAsync(purchase);
         return purchase;
     }
+
     public async Task<Purchase> GetPurchaseByIdAsync(Guid purchaseId)
     {
         return await dbContext.Purchases
