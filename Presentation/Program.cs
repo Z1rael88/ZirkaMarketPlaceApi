@@ -161,7 +161,6 @@ static class Program
             MinimumSameSitePolicy = SameSiteMode.None
         });
         app.MapControllers();
-        app.UseHttpsRedirection();
         await app.RunAsync();
     }
 }
