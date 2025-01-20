@@ -23,6 +23,16 @@ namespace Infrastructure.Data.Configurations
                 .WithOne(u=>u.User)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasMany(u => u.PurchasesAsBuyer)
+                .WithOne(p => p.Buyer)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            builder.HasMany(u => u.PurchasesAsSeller)
+                .WithOne(p => p.Seller)
+                .HasForeignKey(p => p.SellerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
