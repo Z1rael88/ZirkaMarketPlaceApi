@@ -3,6 +3,7 @@ using Domain.Models;
 using Domain.Enums;
 using Mapster;
 using Application.Dtos;
+using Elastic.Clients.Elasticsearch.Snapshot;
 using Infrastructure.Interfaces;
 
 namespace Application.Services;
@@ -46,6 +47,17 @@ public class PurchaseService(IPurchaseRepository purchaseRepository, IProductRep
         await purchaseRepository.SaveChangesAsync();
 
         return purchase.Adapt<PurchaseResponseDto>();
+    }
+    public async Task<PurchaseDto> UpdatePurchaseStatusAsync(Guid purchaseId, PurchaseStatus status)
+    {
+        var purchase = await purchaseRepository.GetPurchaseByIdAsync(purchaseId);
+        if (purchase == null)
+            throw new Exception("Purchase not found");
+
+        purchase.Status = status;
+        await purchaseRepository.SaveChangesAsync();
+
+        return purchase.Adapt<PurchaseDto>();
     }
 
     public async Task<IEnumerable<PurchaseResponseDto>> GetPurchasesByBuyerIdAsync(Guid buyerId)
