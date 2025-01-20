@@ -36,7 +36,7 @@ public class UserController(IUserService userService) : ControllerBase
     public async Task<IActionResult> GoogleCallback([FromQuery] string code)
     {
         await userService.LoginWithGoogleAsync(code);
-        return Redirect("https://localhost:7196/home");
+        return Redirect("https://zirka-market-place-ui.vercel.app/");
     }
 
 

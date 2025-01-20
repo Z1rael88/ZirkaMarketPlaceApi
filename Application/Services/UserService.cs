@@ -222,7 +222,7 @@ public class UserService(
     public string CreateGoogleUrl()
     {
         var clientId = googleOptions.Value.ClientId;
-        var redirectUri = "https://localhost:7196/api/users/google-signin";
+        var redirectUri = "http://74.248.80.169/api/users/google-signin";
         var scope = "openid email profile";
         var state = Guid.NewGuid().ToString();
 
