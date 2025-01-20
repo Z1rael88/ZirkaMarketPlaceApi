@@ -198,7 +198,7 @@ public class UserService(
 
         var clientId = googleOptionsValue.ClientId;
         var clientSecret = googleOptionsValue.ClientSecret;
-        var redirectUri = "https://localhost:7196/api/users/google-signin";
+        var redirectUri = "http://zirkamarketplace.shop/api/users/google-signin";
 
         using var client = new HttpClient();
         var tokenResponse = await client.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(
@@ -222,7 +222,7 @@ public class UserService(
     public string CreateGoogleUrl()
     {
         var clientId = googleOptions.Value.ClientId;
-        var redirectUri = "http://74.248.80.169/api/users/google-signin";
+        var redirectUri = "http://zirkamarketplace.shop/api/users/google-signin";
         var scope = "openid email profile";
         var state = Guid.NewGuid().ToString();
 
