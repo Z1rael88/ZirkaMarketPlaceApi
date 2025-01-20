@@ -87,9 +87,4 @@ public class ProductService(
 
         return 0;
     }
-    public async Task<IEnumerable<ProductResponseDto>> GetProductsByStatusAsync(ProductStatus status)
-    {
-        var products = await productRepository.GetProductsByStatusAsync(status);
-        return products.Adapt<IEnumerable<ProductResponseDto>>();
-    }
 }

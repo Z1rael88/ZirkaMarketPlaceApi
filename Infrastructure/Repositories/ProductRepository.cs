@@ -85,13 +85,7 @@ public class ProductRepository(
         return await dbContext.Products.OrderByDescending(p => p.CreatedDate).Take(10).ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetProductsByStatusAsync(ProductStatus status)
-    {
-        return await dbContext.Products
-            .Where(p => p.Status == status)
-            .ToListAsync();
-    }
-
+    
     public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();

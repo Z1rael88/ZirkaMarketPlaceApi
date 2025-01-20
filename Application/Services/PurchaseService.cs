@@ -10,7 +10,7 @@ namespace Application.Services;
 
 public class PurchaseService(IPurchaseRepository purchaseRepository, IProductRepository productRepository) : IPurchaseService
 {
-    public async Task<PurchaseDto> CreatePurchaseAsync(Guid buyerId, Guid productId, int quantity)
+    public async Task<PurchaseResponseDto> CreatePurchaseAsync(Guid buyerId, Guid productId, int quantity)
     {
         var product = await productRepository.GetProductByIdAsync(productId);
         if (product == null)
@@ -20,15 +20,12 @@ public class PurchaseService(IPurchaseRepository purchaseRepository, IProductRep
         if (sellerId == Guid.Empty)
             throw new Exception("Product has no associated seller"); 
         
-        product.AvailableAmount -= quantity;
-        if (product.AvailableAmount < quantity)
-            throw new Exception("Insufficient product quantity available");
-
         var purchase = new Purchase
         {
             Id = Guid.NewGuid(),
             UserId = buyerId,
             SellerId = sellerId,
+            Product = product,
             ProductId = productId,
             Quantity = quantity,
             Status = PurchaseStatus.Bought
@@ -38,9 +35,9 @@ public class PurchaseService(IPurchaseRepository purchaseRepository, IProductRep
         await purchaseRepository.SaveChangesAsync();
        
 
-        return purchase.Adapt<PurchaseDto>();
+        return purchase.Adapt<PurchaseResponseDto>();
     }
-    public async Task<PurchaseDto> UpdatePurchaseStatusAsync(Guid purchaseId, PurchaseStatus status)
+    public async Task<PurchaseResponseDto> UpdatePurchaseStatusAsync(Guid purchaseId, PurchaseStatus status)
     {
         var purchase = await purchaseRepository.GetPurchaseByIdAsync(purchaseId);
         if (purchase == null)
@@ -49,17 +46,17 @@ public class PurchaseService(IPurchaseRepository purchaseRepository, IProductRep
         purchase.Status = status;
         await purchaseRepository.SaveChangesAsync();
 
-        return purchase.Adapt<PurchaseDto>();
+        return purchase.Adapt<PurchaseResponseDto>();
     }
 
-    public async Task<IEnumerable<PurchaseDto>> GetPurchasesByBuyerIdAsync(Guid buyerId)
+    public async Task<IEnumerable<PurchaseResponseDto>> GetPurchasesByBuyerIdAsync(Guid buyerId)
     {
         var purchases = await purchaseRepository.GetPurchasesByBuyerIdAsync(buyerId);
-        return purchases.Adapt<IEnumerable<PurchaseDto>>();
+        return purchases.Adapt<IEnumerable<PurchaseResponseDto>>();
     }
-    public async Task<IEnumerable<PurchaseDto>> GetPurchasesBySellerIdAsync(Guid sellerId)
+    public async Task<IEnumerable<PurchaseResponseDto>> GetPurchasesBySellerIdAsync(Guid sellerId)
     {
         var purchases = await purchaseRepository.GetPurchasesBySellerIdAsync(sellerId);
-        return purchases.Adapt<IEnumerable<PurchaseDto>>();
+        return purchases.Adapt<IEnumerable<PurchaseResponseDto>>();
     }
 }
