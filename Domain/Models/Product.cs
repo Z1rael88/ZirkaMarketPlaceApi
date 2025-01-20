@@ -1,12 +1,5 @@
 namespace Domain.Models;
 
-public enum ProductStatus
-{
-    Available = 0,
-    NotAvailable = 1,
-    OutOfStock = 2,
-    Purchased = 3
-}
 public class Product : BaseEntity
 {
     public string Name { get; set; }
@@ -21,6 +14,6 @@ public class Product : BaseEntity
     public Guid CategoryId { get; set; }
     public User User { get; set; }
     public Guid UserId { get; set; }
-    public ICollection<Purchase>? Purchases { get; set; }  
-    public ProductStatus Status { get; set; }
+    public Purchase Purchase { get; set; }  
+
 }

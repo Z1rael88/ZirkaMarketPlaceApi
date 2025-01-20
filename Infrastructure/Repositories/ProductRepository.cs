@@ -117,12 +117,7 @@ public class ProductRepository(ElasticsearchClient client,IOptions<Elasricsearch
         );
         return sortedProducts.Documents;
     }
-    public async Task<IEnumerable<Product>> GetProductsByStatusAsync(ProductStatus status)
-    {
-        return await dbContext.Products
-            .Where(p => p.Status == status)
-            .ToListAsync();
-    }
+    
     public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();

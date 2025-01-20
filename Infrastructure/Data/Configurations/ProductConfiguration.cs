@@ -33,14 +33,7 @@ public class ProductConfiguration(ProductValidationOptions productValidationOpti
         builder.HasOne(p => p.User)
             .WithMany(u=>u.Products)
             .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        builder.Property(p => p.Status)
-            .IsRequired()
-            .HasColumnType("integer")
-            .HasConversion(
-                v => (int)v,          
-                v => (ProductStatus)v 
-            );
+            .OnDelete(DeleteBehavior.Cascade); 
 
 
     }
